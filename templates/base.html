@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Virtual Quiver</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" 
+            integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="/static/stylesheets/bootstrap.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet"
+            href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
+    
+    <link rel="stylesheet" href="/static/stylesheets/style.css">
+  
+</head>
+
+<body class="{% block body_class %}{% endblock %}">
+<nav class="navbar navbar-expand">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a href="/" class="navbar-brand">
+        <img src="/static/images/temp-logo.png" alt="Virtual Quiver logo" id="nav-logo">
+        <span>Virtual Quiver</span>
+      </a>
+    </div>
+    <ul class="nav navbar-nav navbar-right">
+      <li>
+        <form class="navbar-form navbar-right" action="/discs">
+            <div class="input-group">
+                <input name="q" class="form-control" placeholder="Search Discs" id="search">
+                <div class="input-group-append">
+                    <button class="btn btn-default">
+                        <span class="fa fa-search"></span>
+                    </button>
+                </div>
+            </div>
+        </form>
+      </li>
+      {% if not g.user %}
+      <li class="nav-item"><a class="nav-link" href="/signup">Sign up</a></li>
+      <li class="nav-item"><a class="nav-link" href="/login">Log in</a></li>
+      {% else %}
+      
+      <li class="nav-item"><a class="nav-link" href="/discs/discover">Discover Discs</a></li>
+      <li class="nav-item"><a class="nav-link" href="/reccomendations">Reccomendations</a></li>
+      <li class="nav-item"><a class="nav-link" href="/users/profile">My Profile</a></li>
+      <li class="nav-item"><a class="nav-link" href="/logout">Log out</a></li>
+      
+      {% endif %}
+    </ul>
+  </div>
+</nav>
+<div class="container">
+    {% for category, message in get_flashed_messages(with_categories=True) %}
+    <div class="alert alert-{{ category }}">{{ message }}</div>
+    {% endfor %}
+  
+</div>
+{% block content %}
+{% endblock %}
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="/static/javascript/ui.js"></script>
+<script src="/static/javascript/ajax.js"></script>
+</body>
+</html>
