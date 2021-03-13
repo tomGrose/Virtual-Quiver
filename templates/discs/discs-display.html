@@ -16,8 +16,17 @@
                     <li class="list-group-item text-primary">Low Stability: <span class="text-danger">{{d.low_stability}}</span></li>
                     <li class="list-group-item text-primary">High Stability: <span class="text-danger">{{d.high_stability}}</span></li>
                     </ul>
-                    <button data-id="{{d.id}}" data-button-type="add-to-bag" class="btn btn-primary">Add to Bag</button>
-                    <button data-id="{{d.id}}" data-button-type="add-to-wishlist" class="btn btn-success">Wishlist</button>
+                    {% if current_user.is_authenticated %}
+                        {% if d in users_discs %}
+                            <div class="btn btn-success">Disc already in your quiver!</div>
+                        {% elif d not in users_discs and d in user_wishes %}
+                            <button data-id="{{d.id}}" data-button-type="add-to-bag" class="btn btn-primary">Add to Bag</button>
+                            <div class="btn btn-success">Disc in your wishlist!</div>
+                        {% else %}
+                            <button data-id="{{d.id}}" data-button-type="add-to-bag" class="btn btn-primary">Add to Bag</button>
+                            <button data-id="{{d.id}}" data-button-type="add-to-wishlist" class="btn btn-success">Wishlist</button>
+                        {% endif %}
+                    {% endif %}
                 </div>
             </div>
         </div>

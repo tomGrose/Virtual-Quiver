@@ -60,6 +60,9 @@ class User(UserMixin, db.Model):
     discs = db.relationship(
         'Disc', secondary="users_discs", backref="user")
 
+    wish_discs = db.relationship(
+        'Disc', secondary="wishlists", backref="user_wish")
+
     def __repr__(self):
         return f"<User #{self.id}: {self.username}, {self.email}>"
 

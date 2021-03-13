@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="container">
+        <div class="card" style="width: 50%;">
+            <img class="card-img-top" src="{{user.image_url}}" alt="{{current_user.username}}'s profile image">
+            <div class="card-body">
+                <h4 class="card-title">{{user.username}}'s Settings</h4>
+                <ul class="list-group list-group-flush">
+                <li class="list-group-item text-primary">First Name: <span class="text-danger">{{user.first_name}}</span></li>
+                <li class="list-group-item text-primary">Last Name: <span class="text-danger">{{user.last_name}}</span></li>
+                <li class="list-group-item text-primary">Location: <span class="text-danger">{{user.location}}</span></li>
+                <li class="list-group-item text-primary">Email: <span class="text-danger">{{user.email}}</span></li>
+                <li class="list-group-item text-primary">Username: <span class="text-danger">{{user.username}}</span></li>
+                </ul>
+                <button class="btn btn-info">Change Password</button>
+                <button class="btn btn-danger">Delete Account</button>
+            </div>
+        </div>
+    </div>
+{% endblock %}

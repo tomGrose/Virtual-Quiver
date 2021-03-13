@@ -104,6 +104,7 @@ def login():
 
 
 @app.route('/logout')
+@login_required
 def logout():
     """Handle logout of user."""
 
@@ -114,6 +115,13 @@ def logout():
 
 ##############################################################################
 # General user routes:
+
+@app.route('/users/profile/<int:user_id>')
+@login_required
+def show_user_profile(user_id):
+
+
+    return render_template('users/profile-settings.html', user=current_user)
         
 
 
@@ -124,8 +132,15 @@ def logout():
 def show_discs():
 
     discs = (Disc.query.limit(50).all())
+    user_discs = []
+    user_wishes = []
 
-    return render_template('discs/discover-discs.html', discs=discs)
+    if current_user.is_authenticated:
+        user = User.query.get(current_user.id)
+        user_discs = user.discs
+        user_wishes = user.wish_discs
+
+    return render_template('discs/discover-discs.html', discs=discs, users_discs=user_discs, user_wishes=user_wishes)
 
 
 @app.route('/discs/add', methods=['POST'])
@@ -143,7 +158,7 @@ def add_users_disc():
 def add_users_wish():
     disc_id = request.json.get('disc_id')
     disc = Disc.query.get_or_404(disc_id)
-    users_new_wish = User_Disc(user_id=current_user.id, disc_id=disc.id)
+    users_new_wish = User_Wishlist(user_id=current_user.id, disc_id=disc.id)
     db.session.add(users_new_wish)
     db.session.commit()
     resp = jsonify({"disc_added_to_wishlist": "Success"})
@@ -160,10 +175,9 @@ def add_users_wish():
 def homepage():
     """Show landing page where users can sign up or log in"""
 
-    if g.user:
-        
-        
-        return render_template('home.html', user=g.user)
+    if current_user.is_authenticated:
+        users_discs = current_user.discs
+        return render_template('home.html', user=current_user, users_discs=users_discs)
     else:
         return render_template('landing.html')
 
