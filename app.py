@@ -307,14 +307,13 @@ def search_discs():
 
     return render_template('discs/discover-discs.html', discs=discs, users_discs=user_discs, user_wishes=user_wishes)
 
-@app.route('/discs/recommendations/disc/<int:disc_id>/<int:page_num>', methods=['GET', 'POST'])
+@app.route('/discs/recommendations/disc/<int:disc_id>/page/<int:page_num>', methods=['GET', 'POST'])
 @login_required
-def show_similiar_discs(page_num):
-    """ Show a user similiar discs to one they selected"""
+def show_similiar_discs(disc_id, page_num):
+    """ Show a user similiar discs to one they selected """
 
     form = User_Discs_Recs()
-    disc_id = request.args.get('disc_id')
-    disc = Disc.query.get_or_404(int(disc_id))
+    disc = Disc.query.get_or_404(disc_id)
     if form.validate_on_submit():
         disc = form.options.data
 

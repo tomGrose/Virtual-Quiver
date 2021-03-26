@@ -30,10 +30,7 @@
                 <li class="list-group-item text-primary">Low Stability: <span class="text-danger">{{d.low_stability}}</span></li>
                 <li class="list-group-item text-primary">High Stability: <span class="text-danger">{{d.high_stability}}</span></li>
                 </ul>
-                <form action="/discs/recommendations/disc/1" method="GET">
-                    <input type="text" name="disc_id" value={{d.id}} hidden>
-                    <button type="submit" class="btn btn-info">See similiar discs</button>
-                </form>
+                <a href="/discs/recommendations/disc/{{d.id}}/page/1"><button type="submit" class="btn btn-info">See similiar discs</button></a>
                 <button data-id="{{d.id}}" data-button-type="remove-from-bag" class="btn btn-danger">Remove from Quiver</button>
             </div>
         </div>
