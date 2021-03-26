@@ -12,6 +12,7 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <!-- <script src="https://kit.fontawesome.com/a39244366d.js" crossorigin="anonymous"></script> -->
 
     <link rel="stylesheet"
             href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
@@ -31,9 +32,9 @@
     </div>
     <ul class="nav navbar-nav navbar-right">
       <li>
-        <form class="navbar-form navbar-right" action="/discs">
+        <form class="navbar-form navbar-right" action="/discs/search" method="GET">
             <div class="input-group">
-                <input name="q" class="form-control" placeholder="Search Discs" id="search">
+                <input name="disc_name" class="form-control" placeholder="Search Discs" id="search">
                 <div class="input-group-append">
                     <button class="btn btn-default">
                         <span class="fa fa-search"></span>
@@ -42,13 +43,14 @@
             </div>
         </form>
       </li>
-      {% if not g.user %}
+      {% if not current_user.is_authenticated %}
       <li class="nav-item"><a class="nav-link" href="/signup">Sign up</a></li>
       <li class="nav-item"><a class="nav-link" href="/login">Log in</a></li>
       {% else %}
       
-      <li class="nav-item"><a class="nav-link" href="/discs/discover">Discover Discs</a></li>
-      <li class="nav-item"><a class="nav-link" href="/reccomendations">Reccomendations</a></li>
+      <li class="nav-item"><a class="nav-link" href="/discs/discover/1">Discover Discs</a></li>
+      <li class="nav-item"><a class="nav-link" href="/discs/recommendations">Recommendations</a></li>
+      <li class="nav-item"><a class="nav-link" href="/discs/wishlist">Wishlist</a></li>
       <li class="nav-item"><a class="nav-link" href="/users/profile/{{current_user.id}}">My Profile</a></li>
       <li class="nav-item"><a class="nav-link" href="/logout">Log out</a></li>
       

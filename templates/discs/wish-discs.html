@@ -1,7 +1,9 @@
-
+{% extends 'base.html' %}
+{% block content %}
+    
 <div class="container">
-    <div class="row" id="discs-display-container">
-        {% for d in threads.items %}
+    <div class="row" id="users-wishlist-container">
+        {% for d in discs %}
         <div class="col-4">
             <div class="card" style="width: 18rem;" id="{{d.id}}-card">
                 <img class="card-img-top" src="{{d.image_url}}" alt="{{d.name}} image">
@@ -15,24 +17,13 @@
                     <li class="list-group-item text-primary">Glide: <span class="text-danger">{{d.glide}}</span></li>
                     <li class="list-group-item text-primary">Low Stability: <span class="text-danger">{{d.low_stability}}</span></li>
                     <li class="list-group-item text-primary">High Stability: <span class="text-danger">{{d.high_stability}}</span></li>
-                    {% if d.disc_rec_based_on %}
-                    <li class="list-group-item text-primary">Recommendation based on: <span class="text-danger">{{d.disc_rec_based_on}}</span></li>
-                    {% endif %}
                     </ul>
-                    {% if current_user.is_authenticated %}
-                        {% if d in users_discs %}
-                            <div class="btn btn-success">Disc already in your quiver!</div>
-                        {% elif d not in users_discs and d in user_wishes %}
-                            <button data-id="{{d.id}}" data-button-type="add-to-bag" class="btn btn-primary">Add to Bag</button>
-                            <div class="btn btn-success">Disc in your wishlist!</div>
-                        {% else %}
-                            <button data-id="{{d.id}}" data-button-type="add-to-bag" class="btn btn-primary">Add to Bag</button>
-                            <button data-id="{{d.id}}" data-button-type="add-to-wishlist" class="btn btn-success">Wishlist</button>
-                        {% endif %}
-                    {% endif %}
+                    <button data-id="{{d.id}}" data-button-type="wishlist-add-to-bag" class="btn btn-primary">Add to Bag</button>
                 </div>
             </div>
         </div>
         {% endfor %}
     </div>
 </div>
+    
+{% endblock %}

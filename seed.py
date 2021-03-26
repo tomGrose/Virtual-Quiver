@@ -18,7 +18,6 @@ def populate_manufacturers():
 
     for c in companies:
         new_manufact = Manufacturer(name=c.get('name'))
-        print(new_manufact)
         db.session.add(new_manufact)
 
 
@@ -35,6 +34,7 @@ def populate_discs():
 
 
     for disc in discs:
+        disc_type = ''
         name = disc.get('name')
         plastic = disc.get('plastic')
         diff = disc.get('difficulty')
@@ -44,10 +44,18 @@ def populate_discs():
         l_stability = disc.get('low_stability')
         manufacturer = disc.get('compaby_name')
         image_url = disc.get('image_url')
+        if speed <= 3:
+            disc_type = 'putter'
+        if speed > 3 and speed <= 5:
+            disc_type = 'mid'
+        if speed > 5 and speed <= 8:
+            disc_type = 'fairway'
+        if speed > 8:
+            disc_type = 'driver'
 
         
         new_disc = Disc(name=name, plastic=plastic, difficulty=diff, speed=speed, glide=glide, 
-                        high_stability=h_stability, low_stability=l_stability, 
+                        high_stability=h_stability, low_stability=l_stability, disc_type = disc_type, 
                         image_url=image_url, manufacturers_name=manufacturer)
         db.session.add(new_disc)
        
@@ -59,5 +67,3 @@ populate_manufacturers()
 db.session.commit()
 populate_discs()
 db.session.commit()
-print(counter)
-        

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h3>Showing recommendations for discs based off of:</h3>
+    <div class="card" style="width: 18rem;">
+        <img class="card-img-top" src="{{disc.image_url}}" alt="{{disc.name}} image">
+        <div class="card-body">
+            <h4 class="card-title">{{disc.name}}</h4>
+            <h5 class="">{{disc.manufacturers_name}}</h5>
+            <ul class="list-group list-group-flush">
+            <li class="list-group-item text-primary">Plastic: <span class="text-danger">{{disc.plastic}}</span></li>
+            <li class="list-group-item text-primary">Difficulty: <span class="text-danger">{{disc.difficulty}}</span></li>
+            <li class="list-group-item text-primary">Speed: <span class="text-danger">{{disc.speed}}</span></li>
+            <li class="list-group-item text-primary">Glide: <span class="text-danger">{{disc.glide}}</span></li>
+            <li class="list-group-item text-primary">Low Stability: <span class="text-danger">{{disc.low_stability}}</span></li>
+            <li class="list-group-item text-primary">High Stability: <span class="text-danger">{{disc.high_stability}}</span></li>
+            </ul>
+        </div>
+    </div>
+    {% include 'users/form.html' %}
+    {% include 'discs/discs-display.html' %}
+    {% include 'discs/discs-paginate.html' %}
+    
+{% endblock %}

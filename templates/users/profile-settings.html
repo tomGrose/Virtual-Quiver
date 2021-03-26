@@ -1,20 +1,32 @@
 {% extends 'base.html' %}
 {% block content %}
-    <div class="container">
-        <div class="card" style="width: 50%;">
+    <div class="container mb-5">
+        <div class="card" style="width: 50%;" id="user-profile-card">
             <img class="card-img-top" src="{{user.image_url}}" alt="{{current_user.username}}'s profile image">
             <div class="card-body">
                 <h4 class="card-title">{{user.username}}'s Settings</h4>
                 <ul class="list-group list-group-flush">
-                <li class="list-group-item text-primary">First Name: <span class="text-danger">{{user.first_name}}</span></li>
-                <li class="list-group-item text-primary">Last Name: <span class="text-danger">{{user.last_name}}</span></li>
-                <li class="list-group-item text-primary">Location: <span class="text-danger">{{user.location}}</span></li>
-                <li class="list-group-item text-primary">Email: <span class="text-danger">{{user.email}}</span></li>
-                <li class="list-group-item text-primary">Username: <span class="text-danger">{{user.username}}</span></li>
+                <li class="list-group-item text-primary">First Name: <span class="text-danger">{{user.first_name}}</span> <span class="edit-pen"><a href="/users/edit/{{current_user.id}}"><i class="fas fa-pen"></i></a></span></li>
+                <li class="list-group-item text-primary">Last Name: <span class="text-danger">{{user.last_name}}</span> <span class="edit-pen"><a href="/users/edit/{{current_user.id}}"><i class="fas fa-pen"></i></a></span></li>
+                <li class="list-group-item text-primary">Location: <span class="text-danger">{{user.location}}</span> <span class="edit-pen"><a href="/users/edit/{{current_user.id}}"><i class="fas fa-pen"></i></a></span></li>
+                <li class="list-group-item text-primary">Email: <span class="text-danger">{{user.email}}</span> <span class="edit-pen"><a href="/users/edit/{{current_user.id}}"><i class="fas fa-pen"></i></a></li>
+                <li class="list-group-item text-primary">Username: <span class="text-danger">{{user.username}}</span class="edit-pen"> <span><a href="/users/edit/{{current_user.id}}"><i class="fas fa-pen"></i></a></span></li>
                 </ul>
                 <button class="btn btn-info">Change Password</button>
-                <button class="btn btn-danger">Delete Account</button>
+                <button class="btn btn-danger" id="account-delete-btn">Delete Account</button>
             </div>
+            <form method="POST" action="/users/delete" id='account-delete-form' hidden>
+                {{ form.hidden_tag() }}
+                {% for field in form if field.widget.input_type != 'hidden' %}
+                    {% for error in field.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                        <h5>Are You sure you want to delete your account?</h5>
+                        {{ field(placeholder=field.label.text, class="form-control") }}
+                {% endfor %}
+                <button type="submit" class="btn btn-danger">Delete Account</button>
+                <button class="btn btn-primary" id="cancel-delete-btn">Cancel</button>
+            </form>
         </div>
     </div>
 {% endblock %}

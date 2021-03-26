@@ -4,15 +4,24 @@
     <h2>Welcome {{user.username}}</h2>
     <p>Lets find some discs!</p>
 </div>
-<h2>{{user.username}}'s Quiver</h2>
-<div class="row" id="discs-display-container">
+<div class="container">
+    <h2>{{user.username}}'s Quiver</h2>
+    <form action="form-control">
+        <select id="home-view-select" class="form-control">
+            <option value="quiver">View Quiver</option>
+            <option value="wishlist">View Wishlist</option>
+        </select>
+    </form>
+</div>
+
+<div class="row justify-content-center mt-3" id="discs-display-container">
     {% for d in users_discs %}
-    <div class="col-4">
-        <div class="card" style="width: 18rem;">
+    <div class="col-3">
+        <div class="card" style="width: 20rem; margin: 2% auto 2% auto;" id="{{d.id}}-card">
             <img class="card-img-top" src="{{d.image_url}}" alt="{{d.name}} image">
             <div class="card-body">
-                <h4 class="card-title">{{d.name}}</h4>
-                <h5 class="">{{d.manufacturers_name}}</h5>
+                <h4 class="card-title">{{d.name.capitalize()}}</h4>
+                <h5 class="">{{d.manufacturers_name.capitalize()}}</h5>
                 <ul class="list-group list-group-flush">
                 <li class="list-group-item text-primary">Plastic: <span class="text-danger">{{d.plastic}}</span></li>
                 <li class="list-group-item text-primary">Difficulty: <span class="text-danger">{{d.difficulty}}</span></li>
@@ -21,9 +30,77 @@
                 <li class="list-group-item text-primary">Low Stability: <span class="text-danger">{{d.low_stability}}</span></li>
                 <li class="list-group-item text-primary">High Stability: <span class="text-danger">{{d.high_stability}}</span></li>
                 </ul>
+                <form action="/discs/recommendations/disc/1" method="GET">
+                    <input type="text" name="disc_id" value={{d.id}} hidden>
+                    <button type="submit" class="btn btn-info">See similiar discs</button>
+                </form>
+                <button data-id="{{d.id}}" data-button-type="remove-from-bag" class="btn btn-danger">Remove from Quiver</button>
             </div>
         </div>
     </div>
     {% endfor %}
 </div>
+<div class="row justify-content-center mt-3" id="users-wishlist-container" hidden>
+    {% for d in user_wishlist %}
+    <div class="col-3">
+        <div class="card" style="width: 20rem; margin: 2% auto 2% auto;" id="{{d.id}}-card">
+            <img class="card-img-top" src="{{d.image_url}}" alt="{{d.name}} image">
+            <div class="card-body">
+                <h4 class="card-title">{{d.name.capitalize()}}</h4>
+                <h5 class="">{{d.manufacturers_name.capitalize()}}</h5>
+                <ul class="list-group list-group-flush">
+                <li class="list-group-item text-primary">Plastic: <span class="text-danger">{{d.plastic}}</span></li>
+                <li class="list-group-item text-primary">Difficulty: <span class="text-danger">{{d.difficulty}}</span></li>
+                <li class="list-group-item text-primary">Speed: <span class="text-danger">{{d.speed}}</span></li>
+                <li class="list-group-item text-primary">Glide: <span class="text-danger">{{d.glide}}</span></li>
+                <li class="list-group-item text-primary">Low Stability: <span class="text-danger">{{d.low_stability}}</span></li>
+                <li class="list-group-item text-primary">High Stability: <span class="text-danger">{{d.high_stability}}</span></li>
+                </ul>
+                
+                <button data-id="{{d.id}}" data-button-type="wishlist-add-to-bag" class="btn btn-primary">Add to Bag</button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<div class="container mt-5 mb-5">
+    <div class="row">
+        <div class="col-12"><h3>Bag Breakdown</h3></div>
+        {% for disc_type, avgs in bag_stats.items() %}
+        <div class="col-3">
+            <h5>{{disc_type.capitalize()}}</h5>
+            <ul class="list-group list-group-numbered">
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                  <div class="ms-2 me-auto">
+                    <div class="fw-bold text-dark">Average Speed</div>
+                  </div>
+                  <span class="badge bg-primary rounded-pill">{{avgs['speed']}}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                  <div class="ms-2 me-auto">
+                    <div class="fw-bold text-dark">Average Glide</div>
+                  </div>
+                  <span class="badge bg-primary rounded-pill">{{avgs['glide']}}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                  <div class="ms-2 me-auto">
+                    <div class="fw-bold text-dark">Average Low Stability</div>
+                  </div>
+                  <span class="badge bg-primary rounded-pill">{{avgs['l_stability']}}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                  <div class="ms-2 me-auto">
+                    <div class="fw-bold text-dark">Average High Stability</div>
+                  </div>
+                  <span class="badge bg-primary rounded-pill">{{avgs['h_stability']}}</span>
+                </li>
+            </ul>
+        </div>
+        {% endfor %}
+        <div class="col"></div>
+    </div>
+</div>
+
+    
+
 {% endblock %}

@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block content %}
+    
+<div class="container">
+    <div class="row" id="discs-display-container">
+        <div class="col-4">
+            <img class="card-img-top" src="{{disc.image_url}}" alt="{{disc.name}} image">
+        </div>
+        <div class="col-8">
+            <div class="card" style="width: 18rem;" id="{{disc.id}}-card">
+                <div class="card-body">
+                    <h4 class="card-title">{{disc.name.capitalize()}}</h4>
+                    <h5 class="">{{disc.manufacturers_name.capitalize()}}</h5>
+                    <ul class="list-group list-group-flush">
+                    <li class="list-group-item text-primary">Plastic: <span class="text-danger">{{disc.plastic}}</span></li>
+                    <li class="list-group-item text-primary">Difficulty: <span class="text-danger">{{disc.difficulty}}</span></li>
+                    <li class="list-group-item text-primary">Speed: <span class="text-danger">{{disc.speed}}</span></li>
+                    <li class="list-group-item text-primary">Glide: <span class="text-danger">{{disc.glide}}</span></li>
+                    <li class="list-group-item text-primary">Low Stability: <span class="text-danger">{{disc.low_stability}}</span></li>
+                    <li class="list-group-item text-primary">High Stability: <span class="text-danger">{{disc.high_stability}}</span></li>
+                    </ul>
+                    {% if current_user.is_authenticated %}
+                        {% if d in current_user.discs %}
+                            <div class="btn btn-success">Disc already in your quiver!</div>
+                        {% elif d not in current_user.discs and d in current_user.wish_discs %}
+                            <button data-id="{{disc.id}}" data-button-type="add-to-bag" class="btn btn-primary">Add to Bag</button>
+                            <div class="btn btn-success">Disc in your wishlist!</div>
+                        {% else %}
+                            <button data-id="{{disc.id}}" data-button-type="add-to-bag" class="btn btn-primary">Add to Bag</button>
+                            <button data-id="{{disc.id}}" data-button-type="add-to-wishlist" class="btn btn-success">Wishlist</button>
+                            <button data-id="{{disc.id}}" data-button-type="add-review" class="btn btn-info">Add Review</button>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <h2>Reviews</h2>
+        <div id="accordion">
+            <div class="card">
+                <div class="card-header" id="headingOne">
+                    <h5 class="mb-0">
+                        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            Reviews
+                        </button>
+                    </h5>
+                </div>
+                <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+                    <div class="card-body">
+                        {% for r in reviews %}
+                        <div class="col-10">
+                            <div class="card">
+                                <div class="card-header">
+                                {{ r.username }}
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">{{r.title}}</h5>
+                                    <p class="card-text">{{r.content}}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header" id="headingTwo">
+                    <h5 class="mb-0">
+                        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            Broken in Reviews
+                        </button>
+                    </h5>
+                </div>
+                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+                    <div class="card-body">
+                        {% for r in broken_in_reviews %}
+                        <div class="col-10">
+                            <div class="card">
+                                <div class="card-header">
+                                {{ r.user.username }}
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">{{r.title}}</h5>
+                                    <p class="card-text">{{r.content}}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    
+{% endblock %}

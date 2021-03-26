@@ -1,7 +1,11 @@
 """SQLAlchemy models for Virtual Quiver"""
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy_utils import EmailType, URLType, ChoiceType
+from sqlalchemy.sql import func
 from flask_login import UserMixin
+from furl import furl
+
 
 bcrypt = Bcrypt()
 db = SQLAlchemy()
@@ -16,44 +20,106 @@ class User(UserMixin, db.Model):
 
     __tablename__ = 'users'
 
+    TYPES = [
+    (u'alabama', u'AL'),
+    (u'alaska', u'AK'),
+    (u'arizona', u'AZ'),
+    (u'arkansas', u'AR'),
+    (u'california', u'CA'),
+    (u'colorado', u'CO'),
+    (u'connecticut', u'CT'),
+    (u'deleware', u'DE'),
+    (u'florida', u'FL'),
+    (u'georgia', u'GA'),
+    (u'hawaii', u'HI'),
+    (u'idaho', u'ID'),
+    (u'illinois', u'IL'),
+    (u'indiana', u'IN'),
+    (u'iowa', u'IA'),
+    (u'kansas', u'KS'),
+    (u'kentucky', u'KY'),
+    (u'louisiana', u'LA'),
+    (u'maine', u'ME'),
+    (u'maryland', u'MD'),
+    (u'massachusetts', u'MA'),
+    (u'michigan', u'MI'),
+    (u'minnesota', u'MN'),
+    (u'mississippi', u'MS'),
+    (u'missouri', u'MO'),
+    (u'montana', u'MT'),
+    (u'nebraska', u'NE'),
+    (u'nevada', u'NV'),
+    (u'new hampshire', u'NH'),
+    (u'new jersey', u'NJ'),
+    (u'new mexico', u'NM'),
+    (u'new york', u'NY'),
+    (u'north carolina', u'NC'),
+    (u'north dakota', u'ND'),
+    (u'ohio', u'OH'),
+    (u'oklahoma', u'OK'),
+    (u'oregon', u'OR'),
+    (u'pennsylvania', u'PA'),
+    (u'rhode island', u'RI'),
+    (u'south carolina', u'SC'),
+    (u'south dakota', u'SD'),
+    (u'tennessee', u'TN'),
+    (u'texas', u'TX'),
+    (u'utah', u'UT'),
+    (u'vermont', u'VT'),
+    (u'virginia', u'VA'),
+    (u'washington', u'WA'),
+    (u'west virginia', u'WV'),
+    (u'wisconsin', u'WI'),
+    (u'wyoming', u'WY')
+    ]
+
     id = db.Column(
         db.Integer,
         primary_key=True,
     )
 
+    alternate_id = db.Column(
+        db.Integer
+    )
+
     username = db.Column(
-        db.Text,
+        db.String,
         nullable=False,
         unique=True,
+        info={'label': 'Username'}
     )
 
     email = db.Column(
-        db.Text,
+        EmailType,
         nullable=False,
         unique=True,
+        info={'label': 'Email'}
     )
 
     first_name = db.Column(
-        db.Text,
-        nullable=False
+        db.String,
+        nullable=False,
+        info={'label': 'First Name'}
     )
 
     last_name = db.Column(
-        db.Text,
-        nullable=False
+        db.String,
+        nullable=False,
+        info={'label': 'Last Name'}
     )
 
     image_url = db.Column(
-        db.Text,
-        default="/static/images/default-pic.png",
+        URLType, 
+        default='https://thumbs.dreamstime.com/z/disc-golf-frisbee-vector-eps-hand-drawn-crafteroks-svg-free-file-dxf-logo-silhouette-icon-instant-download-digital-cutting-clipart-146467312.jpg', 
+        info={'label': '(optional) Profile Image URL'}
     )
 
     location = db.Column(
-        db.Text
+        ChoiceType(TYPES)
     )
 
     password = db.Column(
-        db.Text,
+        db.String,
         nullable=False,
     )
 
@@ -62,6 +128,7 @@ class User(UserMixin, db.Model):
 
     wish_discs = db.relationship(
         'Disc', secondary="wishlists", backref="user_wish")
+
 
     def __repr__(self):
         return f"<User #{self.id}: {self.username}, {self.email}>"
@@ -173,6 +240,10 @@ class Disc(db.Model):
         nullable=False
     )
 
+    disc_type = db.Column(
+        db.Text,
+    )
+
     image_url = db.Column(
         db.Text,
         default="",
@@ -181,6 +252,10 @@ class Disc(db.Model):
         db.Text,
         db.ForeignKey('manufacturers.name')
     )
+
+    def __repr__(self):
+        return f"ID: {self.id} Name: {self.name}"
+
 
 class User_Wishlist(db.Model):
     """Model for holding a users id and disc id for their wishlist"""
@@ -224,6 +299,11 @@ class User_Disc(db.Model):
         db.ForeignKey('discs.id', ondelete="cascade")
     )
 
+    date_added = db.Column(
+        db.DateTime(timezone=True),
+        server_default=func.now()
+    )
+
 class Review(db.Model):
     """List of manufacturers"""
 
@@ -254,4 +334,8 @@ class Review(db.Model):
         nullable=False
     )
 
+class Rec_Disc(Disc, db.Model):
+    __abstract__ = True
 
+    id = db.Column(db.Integer)
+    disc_rec_based_on = db.Column(db.Text)

@@ -1,9 +1,51 @@
 {% extends 'base.html' %}
 {% block content %}
     <h2>Discover your new favorite disc</h2>
-    <form action="">
-        
-    </form>
-        {% include 'discs/discs-display.html' %}
+    <div class="container">
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            {% for field in form if field.widget.input_type != 'hidden' %}
+                {% for error in field.errors %}
+                    <span class="text-danger">{{ error }}</span>
+                {% endfor %}
+                <!-- {{ field.label }} -->
+                <div class="row">
+                    <div class="col-10">
+                        {% if field.label.text == "Difficulty" %}
+                            <span>0 - 6</span>
+                            {{ form.difficulty_check.label }}: {{ form.difficulty_check() }}
+                            {{ field(placeholder=field.label.text, class="form-control", min='0', max='6', oninput="difficultyIdVal.value = difficultyId.value") }}
+                        {% elif field.label.text == "Speed" %}
+                            <span>1 - 14</span>
+                            {{ form.speed_check.label }}: {{ form.speed_check() }}
+                            {{ field(placeholder=field.label.text, class="form-control", min='1', max='14', oninput="speedIdVal.value = speedId.value") }}
+                        {% elif field.label.text == "Glide" %}
+                            <span>1 - 7</span>
+                            {{ form.glide_check.label }}: {{ form.glide_check() }}
+                            {{ field(placeholder=field.label.text, class="form-control", min='1', max='7', oninput="glideIdVal.value = glideId.value") }}
+                        {% elif field.label.text == "High Stability" %}
+                            <span>-5 - 1</span>
+                            {{ form.h_stability_check.label }}: {{ form.h_stability_check() }}
+                            {{ field(placeholder=field.label.text, class="form-control", min='-5', max='1', oninput="high_stabilityIdVal.value = high_stabilityId.value") }}
+                        {% elif field.label.text == "Low Stability" %}
+                            <span>0 - 5</span>
+                            {{ form.l_stability_check.label }}: {{ form.l_stability_check() }}
+                            {{ field(placeholder=field.label.text, class="form-control", min='0', max='5', oninput="low_stabilityIdVal.value = low_stabilityId.value") }}
+                        {% endif %}
+                    </div>
+                    <div class="col-2">
+                        <output name="{{field.name}}" id="{{field.name}}IdVal"></output>
+                        <p class="search-value" id="{{field.name}}-value"></p>
+                    </div>
+                </div>
+            {% endfor %}
+            {{ form.disc_type.label }}: {{ form.disc_type() }}
+            <button type="submit" class="btn btn-success">Submit</button>
+        </form>
+    </div>
+    
+    {% include 'discs/discs-display.html' %}
+    {% include 'discs/discs-paginate.html' %}
+    
     
 {% endblock %}

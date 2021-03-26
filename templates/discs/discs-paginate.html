@@ -1,0 +1,22 @@
+<div class="container">
+    <div class="row">
+        <div class="col-10 m-5">
+            {% for page in threads.iter_pages() %}
+                {% if page %}
+                    {% if request.endpoint == 'show_discs' %}
+                        <a href="{{ url_for('show_discs', page_num=page) }}">{{ page }}</a>
+                    {% elif request.endpoint == 'show_similiar_discs' %}
+                        
+                        <form action="/discs/recommendations/disc/{{ page }}" method="GET">
+                            <input type="text" name="disc_id" value={{disc.id}} hidden>
+                            <button type="submit" class=""><a href="{{ url_for('show_similiar_discs', page_num=page) }}">{{ page }}</a></button>
+                        </form>
+                    {% endif %}
+                {% else %}
+                    ...
+                {% endif %}
+
+            {% endfor %}
+        </div>
+    </div>
+</div>
