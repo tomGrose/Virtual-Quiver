@@ -7,12 +7,13 @@
             <img class="card-img-top" src="{{disc.image_url}}" alt="{{disc.name}} image">
         </div>
         <div class="col-8">
-            <div class="card" style="width: 18rem;" id="{{disc.id}}-card">
+            <div class="card" id="{{disc.id}}-card">
                 <div class="card-body">
                     <h4 class="card-title">{{disc.name.capitalize()}}</h4>
                     <h5 class="">{{disc.manufacturers_name.capitalize()}}</h5>
                     <ul class="list-group list-group-flush">
                     <li class="list-group-item text-primary">Plastic: <span class="text-danger">{{disc.plastic}}</span></li>
+                    <li class="list-group-item text-primary">Disc Type: <span class="text-danger">{{disc.disc_type}}</span></li>
                     <li class="list-group-item text-primary">Difficulty: <span class="text-danger">{{disc.difficulty}}</span></li>
                     <li class="list-group-item text-primary">Speed: <span class="text-danger">{{disc.speed}}</span></li>
                     <li class="list-group-item text-primary">Glide: <span class="text-danger">{{disc.glide}}</span></li>
@@ -35,10 +36,16 @@
             </div>
         </div>
     </div>
-    <div class="row">
+    <div class="container">
+        <div class="row">
+            <div class="col-6">Amount of people with this disc in their quiver: {{disc_count}}</div>
+            <div class="col-6">Amount of people with this disc in their wishlist: {{wish_count}}</div>
+        </div>
+    </div>
+    <div class="container">
         <h2>Reviews</h2>
-        <div id="accordion">
-            <div class="card">
+        <div id="accordion" class="row">
+            <div class="card col-12">
                 <div class="card-header" id="headingOne">
                     <h5 class="mb-0">
                         <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
@@ -48,14 +55,18 @@
                 </div>
                 <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
                     <div class="card-body">
+                        {% if reviews|length == 0 %}
+                            <p>Looks like there are no reviews yet!</p>
+                        {% endif %}
                         {% for r in reviews %}
                         <div class="col-10">
                             <div class="card">
                                 <div class="card-header">
-                                {{ r.username }}
+                                User: {{ r.username }}
                                 </div>
                                 <div class="card-body">
                                     <h5 class="card-title">{{r.title}}</h5>
+                                    <p>Throw Type: <span class="text-info">{{r.throw_type}}</span></p>
                                     <p class="card-text">{{r.content}}</p>
                                 </div>
                             </div>
@@ -64,7 +75,7 @@
                     </div>
                 </div>
             </div>
-            <div class="card">
+            <div class="card col-12">
                 <div class="card-header" id="headingTwo">
                     <h5 class="mb-0">
                         <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
@@ -74,6 +85,9 @@
                 </div>
                 <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
                     <div class="card-body">
+                        {% if broken_in_reviews|length == 0 %}
+                            <p>Looks like there are no broken in reviews yet!</p>
+                        {% endif %}
                         {% for r in broken_in_reviews %}
                         <div class="col-10">
                             <div class="card">
@@ -87,6 +101,26 @@
                             </div>
                         </div>
                         {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="card col-12">
+                <div class="card-header" id="headingThree">
+                    <h5 class="mb-0">
+                        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                            Review Disc
+                        </button>
+                    </h5>
+                </div>
+                <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+                    <div class="card-body">
+                        {% if current_user.is_authenticated %}
+                            {% include 'users/form.html' %}
+                        {% else %}
+                            <div class="card card-body">
+                                <p>Please <span><a href="/login">login</a></span> or <span><a href="/signup">signup</a></span> to leave a review!</p>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>

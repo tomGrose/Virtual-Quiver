@@ -6,10 +6,11 @@
             <div class="card" style="width: 18rem;" id="{{d.id}}-card">
                 <img class="card-img-top" src="{{d.image_url}}" alt="{{d.name}} image">
                 <div class="card-body">
-                    <h4 class="card-title">{{d.name}}</h4>
-                    <h5 class="">{{d.manufacturers_name}}</h5>
+                    <h4 class="card-title"><a href="/discs/{{d.id}}">{{d.name.capitalize()}}</a></h4>
+                    <h5 class="">{{d.manufacturers_name.capitalize()}}</h5>
                     <ul class="list-group list-group-flush">
                     <li class="list-group-item text-primary">Plastic: <span class="text-danger">{{d.plastic}}</span></li>
+                    <li class="list-group-item text-primary">Disc Type: <span class="text-danger">{{d.disc_type}}</span></li>
                     <li class="list-group-item text-primary">Difficulty: <span class="text-danger">{{d.difficulty}}</span></li>
                     <li class="list-group-item text-primary">Speed: <span class="text-danger">{{d.speed}}</span></li>
                     <li class="list-group-item text-primary">Glide: <span class="text-danger">{{d.glide}}</span></li>

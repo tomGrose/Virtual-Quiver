@@ -4,6 +4,7 @@ from wtforms_alchemy import model_form_factory
 from wtforms import StringField, PasswordField, TextAreaField, BooleanField, SelectField
 from wtforms.fields.html5 import DecimalRangeField, IntegerRangeField
 from wtforms.validators import DataRequired, Length, Email, NumberRange
+from wtforms.widgets import TextArea
 from wtforms_alchemy.fields import QuerySelectField
 from models import Disc, User
 
@@ -18,13 +19,6 @@ class UserSignupForm(BaseModelForm):
     class Meta:
         model = User
         exclude = ['alternate_id']
-    # username = StringField('Username', validators=[DataRequired()])
-    # email = StringField('E-mail', validators=[DataRequired(), Email()])
-    # first_name = StringField('First Name', validators=[DataRequired()])
-    # last_name = StringField('Last Name', validators=[DataRequired()])
-    # location = StringField('State', validators=[DataRequired()])
-    # image_url = StringField('(Optional) Profile Image URL')
-    # password = PasswordField('Password', validators=[Length(min=6)])
 
 
 class LoginForm(FlaskForm):
@@ -73,6 +67,18 @@ class User_Edit_Form(FlaskForm):
     last_name = StringField('Last Name', validators=[DataRequired()])
     location = StringField('State', validators=[DataRequired()])
     image_url = StringField('(Optional) Profile Image URL')
+
+
+class User_Review(FlaskForm):
+    title = StringField('Review Title', validators=[DataRequired(), Length(max=60)])
+    throw_type = SelectField('Throw Type', 
+                            choices=[
+                            ('backhand', 'Backhand'), 
+                            ('forehand', 'Forehand')],
+                            validators=[DataRequired()]
+                            )
+    content = StringField('Review Content', widget=TextArea(), validators=[DataRequired()])
+    
 
 # class Search_Similiar_Disc(FlaskForm):
 #     more_speed =

@@ -15,15 +15,26 @@
 </div>
 
 <div class="row justify-content-center mt-3" id="discs-display-container">
+    {% if users_discs|length == 0 %}
+    <div class="col-12">
+      <p>
+        You have not added any discs to your quiver yet! Head over to 
+        <span><a href="/discs/discover/page/1">discover</a></span> 
+        to search for discs you already own to add to your collection. 
+        You can also use the searchbar up top to search for discs by name.
+      </p>
+    </div>
+    {% else %}
     {% for d in users_discs %}
     <div class="col-3">
         <div class="card" style="width: 20rem; margin: 2% auto 2% auto;" id="{{d.id}}-card">
             <img class="card-img-top" src="{{d.image_url}}" alt="{{d.name}} image">
             <div class="card-body">
-                <h4 class="card-title">{{d.name.capitalize()}}</h4>
+                <h4 class="card-title"><a href="/discs/{{d.id}}">{{d.name.capitalize()}}</a></h4>
                 <h5 class="">{{d.manufacturers_name.capitalize()}}</h5>
                 <ul class="list-group list-group-flush">
                 <li class="list-group-item text-primary">Plastic: <span class="text-danger">{{d.plastic}}</span></li>
+                <li class="list-group-item text-primary">Disc Type: <span class="text-danger">{{d.disc_type}}</span></li>
                 <li class="list-group-item text-primary">Difficulty: <span class="text-danger">{{d.difficulty}}</span></li>
                 <li class="list-group-item text-primary">Speed: <span class="text-danger">{{d.speed}}</span></li>
                 <li class="list-group-item text-primary">Glide: <span class="text-danger">{{d.glide}}</span></li>
@@ -32,21 +43,36 @@
                 </ul>
                 <a href="/discs/recommendations/disc/{{d.id}}/page/1"><button type="submit" class="btn btn-info">See similiar discs</button></a>
                 <button data-id="{{d.id}}" data-button-type="remove-from-bag" class="btn btn-danger">Remove from Quiver</button>
+                {% if d in broken_in_discs %}
+                <a href="/discs/review/{{d.id}}" class="btn btn-success">Leave a broken in Review</a>
+                {% endif %}
             </div>
         </div>
     </div>
     {% endfor %}
+    {% endif %}
 </div>
 <div class="row justify-content-center mt-3" id="users-wishlist-container" hidden>
+    {% if user_wishlist|length == 0 %}
+    <div class="col-12">
+      <p>
+        You have not added any discs to your wishlist yet! Head over to 
+        <span><a href="/discs/discover/page/1">discover</a></span> 
+        to search for discs you eventually want to add to your quiver. 
+        You can also use the searchbar up top to search for discs by name.
+      </p>
+    </div>
+    {% else %}
     {% for d in user_wishlist %}
     <div class="col-3">
         <div class="card" style="width: 20rem; margin: 2% auto 2% auto;" id="{{d.id}}-card">
             <img class="card-img-top" src="{{d.image_url}}" alt="{{d.name}} image">
             <div class="card-body">
-                <h4 class="card-title">{{d.name.capitalize()}}</h4>
+                <h4 class="card-title"><a href="/discs/{{d.id}}">{{d.name.capitalize()}}</a></h4>
                 <h5 class="">{{d.manufacturers_name.capitalize()}}</h5>
                 <ul class="list-group list-group-flush">
                 <li class="list-group-item text-primary">Plastic: <span class="text-danger">{{d.plastic}}</span></li>
+                <li class="list-group-item text-primary">Disc Type: <span class="text-danger">{{d.disc_type}}</span></li>
                 <li class="list-group-item text-primary">Difficulty: <span class="text-danger">{{d.difficulty}}</span></li>
                 <li class="list-group-item text-primary">Speed: <span class="text-danger">{{d.speed}}</span></li>
                 <li class="list-group-item text-primary">Glide: <span class="text-danger">{{d.glide}}</span></li>
@@ -59,6 +85,7 @@
         </div>
     </div>
     {% endfor %}
+    {% endif %}
 </div>
 <div class="container mt-5 mb-5">
     <div class="row">
@@ -67,6 +94,12 @@
         <div class="col-3">
             <h5>{{disc_type.capitalize()}}</h5>
             <ul class="list-group list-group-numbered">
+              <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                  <div class="fw-bold text-dark">Total</div>
+                </div>
+                <span class="badge bg-primary rounded-pill">{{avgs['total']}}</span>
+              </li>
                 <li class="list-group-item d-flex justify-content-between align-items-start">
                   <div class="ms-2 me-auto">
                     <div class="fw-bold text-dark">Average Speed</div>

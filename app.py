@@ -3,14 +3,13 @@ import os
 from flask import Flask, render_template, request, flash, redirect, session, g, url_for, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
-from forms import UserSignupForm, LoginForm, User_Discs_Recs, Disc_Search_Form, Delete_Account, User_Edit_Form
-from models import db, connect_db, User, Disc, User_Wishlist, User_Disc, Manufacturer, Review, Rec_Disc
+from sqlalchemy import func
+from forms import UserSignupForm, LoginForm, User_Discs_Recs, Disc_Search_Form, Delete_Account, User_Edit_Form, User_Review
+from models import db, connect_db, User, Disc, User_Wishlist, User_Disc, Manufacturer, Disc_Review, Rec_Disc, User_Broken_In_Disc, Review, Broken_In_Review
 from flask_login import LoginManager, login_user, login_required, current_user, logout_user, fresh_login_required
-from datetime import timedelta
-from helpers import generate_ran_recs, get_stats
+from datetime import timedelta, datetime
+from helpers import generate_ran_recs, get_stats, populate_broken_in_discs
 
-
-CURR_USER = "curr_user"
 
 app = Flask(__name__)
 
@@ -41,18 +40,6 @@ db.create_all()
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
-
-@app.before_request
-def add_user_to_global():
-    """If a user is logged in add them to the global variable"""
-
-    if current_user.is_authenticated:
-        g.user = User.query.get(current_user.id)
-        CURR_USER = g.user
-
-    else:
-        g.user = None
-
 
 
 @app.route('/signup', methods=["GET", "POST"])
@@ -102,10 +89,8 @@ def login():
                                  form.password.data)
 
         if user:
-            if form.remember.data:
-                login_user(user, remember=True)
-            else:
-                login_user(user)
+            login_user(user, remember=True)
+            populate_broken_in_discs(current_user.discs, current_user.broken_in_discs, current_user)
             flash("Welcome Back!", "success")
             return redirect("/")
 
@@ -175,6 +160,7 @@ def edit_users_account(user_id):
             db.session.commit()
 
         except IntegrityError:
+            db.session.rollback()
             flash("Username already taken", 'danger')
             return render_template('users/sign-up.html', form=form)
 
@@ -186,7 +172,7 @@ def edit_users_account(user_id):
 # ##############################################################################
 # # Disc routes:
 
-@app.route('/discs/discover/<int:page_num>', methods=['GET', 'POST'])
+@app.route('/discs/discover/page/<int:page_num>', methods=['GET', 'POST'])
 def show_discs(page_num):
     """ Show all the discs in the database, allow users to search for discs using filters. If a user is
     logged in they will be able to add the discs to their bag, or wishlist """
@@ -245,8 +231,9 @@ def show_discs(page_num):
 
 
 @app.route('/discs/add', methods=['POST'])
+@login_required
 def add_users_disc():
-    """ Route to dynamically add a disc to a user's bag by calling it with javascript"""
+    """ Route to dynamically add a disc to a user's bag by calling it with javascript """
 
     disc_id = request.json.get('disc_id')
     disc = Disc.query.get_or_404(disc_id)
@@ -257,8 +244,9 @@ def add_users_disc():
     return (resp, 201)
 
 @app.route('/discs/remove', methods=['POST'])
+@login_required
 def remove_users_disc():
-    """ Route to dynamically remove a disc to a user's bag by calling it with javascript"""
+    """ Route to dynamically remove a disc to a user's bag by calling it with javascript """
 
     disc_id = request.json.get('disc_id')
     users_disc = User_Disc.query.filter(User_Disc.user_id == current_user.id, User_Disc.disc_id == disc_id).first()
@@ -269,8 +257,9 @@ def remove_users_disc():
 
 
 @app.route('/discs/wishlist/add', methods=['POST'])
+@login_required
 def add_users_wish():
-    """ Route to dynamically add a disc to a user's wishlist by calling it with javascript"""
+    """ Route to dynamically add a disc to a user's wishlist by calling it with javascript """
 
     disc_id = request.json.get('disc_id')
     disc = Disc.query.get_or_404(disc_id)
@@ -281,8 +270,9 @@ def add_users_wish():
     return (resp, 201)
 
 @app.route('/discs/wishlist/remove', methods=['POST'])
+@login_required
 def remove_from_wishlist():
-    """ Provide a post route for discs to be dynamically removed from a users wishlist"""
+    """ Provide a post route for discs to be dynamically removed from a users wishlist """
 
     disc_id = request.json.get('disc_id')
     wish = User_Wishlist.query.filter(User_Wishlist.user_id == current_user.id, User_Wishlist.disc_id == disc_id).first()
@@ -293,7 +283,7 @@ def remove_from_wishlist():
 
 @app.route('/discs/search')
 def search_discs():
-    """ View to handle users searching for discs with the search bar"""
+    """ View to handle users searching for discs with the search bar """
 
     disc_name = request.args.get('disc_name')
     discs = Disc.query.filter(Disc.name.like(f"%{disc_name}%")).all()
@@ -354,12 +344,57 @@ def show_wishlist():
     discs = current_user.wish_discs
     return render_template('discs/wish-discs.html', discs=discs)
 
-@app.route('/discs/<int:disc_id>')
+
+@app.route('/discs/<int:disc_id>', methods=['POST', 'GET'])
 def show_disc_page(disc_id):
+    """ Show more information for a particular disc, including reviews"""
+
+    form = User_Review()
     disc = Disc.query.get_or_404(disc_id)
-    reviews = Review.query.filter(disc_id == disc.id).all()
-    broken_in_reviews = []
-    return render_template('discs/disc.html', disc=disc, reviews=reviews, broken_in_reviews=broken_in_reviews)
+    if form.validate_on_submit():
+        title = form.title.data
+        content = form.content.data
+        review = Review(user_id=current_user.id, username=current_user.username, disc_id=disc.id, title=title, content=content)
+        db.session.add(review)
+        db.session.commit()
+        flash("Review Added!", "success")
+        return redirect(url_for('show_disc_page', disc_id=disc.id))
+    
+    disc_in_bag_count = User_Disc.query.filter_by(disc_id = f'{disc.id}').count()
+    disc_in_wish_count = User_Wishlist.query.filter_by(disc_id = f'{disc.id}').count()
+    reviews = Review.query.filter_by(disc_id=f'{disc.id}').all()
+    broken_in_reviews = Broken_In_Review.query.filter_by(disc_id=f'{disc.id}').all()
+    return render_template('discs/disc.html', 
+                            disc=disc, 
+                            reviews=reviews, 
+                            broken_in_reviews=broken_in_reviews, 
+                            form=form, 
+                            disc_count=disc_in_bag_count, 
+                            wish_count=disc_in_wish_count)
+
+
+@app.route('/discs/review/<int:disc_id>', methods=['POST', 'GET'])
+@login_required
+def leave_broken_in_review(disc_id):
+    """ A review page for a user who has had a disc in their bag for more than 4 months to leave a review """
+
+    disc = Disc.query.get_or_404(disc_id)
+    if disc not in current_user.broken_in_discs:
+        flash("You do not have permission to leave a broken in review for this disc yet.", "danger")
+        return redirect('/')
+
+    form = User_Review()
+    if form.validate_on_submit():
+        title = form.title.data
+        content = form.content.data
+        review = Broken_In_Review(user_id=current_user.id, username=current_user.username, disc_id=disc.id, title=title, content=content)
+        db.session.add(review)
+        db.session.commit()
+        flash("Review Added!", "success")
+        return redirect('/')
+    
+    return render_template('discs/disc-broken-in-review.html', form=form)
+
 
 
 
@@ -376,9 +411,28 @@ def homepage():
         users_discs = current_user.discs
         user_wishlist = current_user.wish_discs
         bag_stats = get_stats(users_discs)
-        return render_template('home.html', user=current_user, users_discs=users_discs, user_wishlist=user_wishlist, bag_stats=bag_stats)
+        broken_in_discs = current_user.broken_in_discs
+        return render_template('home.html', 
+                            user=current_user, 
+                            users_discs=users_discs, 
+                            user_wishlist=user_wishlist, 
+                            bag_stats=bag_stats, 
+                            broken_in_discs=broken_in_discs)
     else:
         return render_template('landing.html')
+
+
+# ##############################################################################
+# # Informational pages
+
+@app.route('/about')
+def show_about():
+    """ SHow about page for the website"""
+    return render_template('about.html')
+
+@app.route('/information')
+def show_info():
+    return render_template('info.html')
 
 
 # ##############################################################################

@@ -3,6 +3,7 @@ from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_utils import EmailType, URLType, ChoiceType
 from sqlalchemy.sql import func
+from sqlalchemy.ext.declarative import declared_attr
 from flask_login import UserMixin
 from furl import furl
 
@@ -128,6 +129,9 @@ class User(UserMixin, db.Model):
 
     wish_discs = db.relationship(
         'Disc', secondary="wishlists", backref="user_wish")
+
+    broken_in_discs = db.relationship(
+        'Disc', secondary="broken_in_discs")
 
 
     def __repr__(self):
@@ -304,24 +308,20 @@ class User_Disc(db.Model):
         server_default=func.now()
     )
 
-class Review(db.Model):
-    """List of manufacturers"""
+class User_Broken_In_Disc(db.Model):
+    """ Table Containing relationship from a user to discs 
+    if they have been in the users bag for over four months """
 
-    __tablename__ = 'reviews'
+    __tablename__ = 'broken_in_discs'
 
     id = db.Column(
         db.Integer,
-        primary_key=True,
+        primary_key=True
     )
 
     user_id = db.Column(
         db.Integer,
-        db.ForeignKey('users.id', ondelete="cascade")
-    )
-
-    username = db.Column(
-        db.Text,
-        db.ForeignKey('users.username', ondelete="cascade")
+        db.ForeignKey('users.id', ondelete='cascade')
     )
 
     disc_id = db.Column(
@@ -329,9 +329,66 @@ class Review(db.Model):
         db.ForeignKey('discs.id', ondelete="cascade")
     )
 
+class Disc_Review(db.Model):
+    """Abstract table for regular reviews and broken in reviews to inherit from """
+
+    __abstract__ = True
+
+    TYPES = {'backhand':'Backhand', 'forehand':'Forehand'}
+
+    @declared_attr
+    def user_id(cls):
+        return db.Column(
+            db.Integer,
+            db.ForeignKey('users.id', ondelete="cascade")
+            )
+
+    @declared_attr
+    def username(cls):
+        return db.Column(
+            db.Text,
+            db.ForeignKey('users.username', ondelete="cascade")
+            )
+
+    @declared_attr
+    def disc_id(cls):
+        return db.Column(
+            db.Integer,
+            db.ForeignKey('discs.id', ondelete="cascade")
+            )
+
+
+    title = db.Column(
+        db.Text,
+        nullable=False
+    )
+
+    throw_type = db.Column(
+        ChoiceType(TYPES),
+    )
+
     content = db.Column(
         db.Text,
         nullable=False
+    )
+
+class Review(Disc_Review):
+    """ Model for holding the reviews users have left for discs """
+    
+    __tablename__ = 'reviews'
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True,
+    )
+
+class Broken_In_Review(Disc_Review):
+
+    __tablename__ = 'broken_in_reviews'
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True,
     )
 
 class Rec_Disc(Disc, db.Model):

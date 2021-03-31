@@ -4,10 +4,11 @@
     <div class="card" style="width: 18rem;">
         <img class="card-img-top" src="{{disc.image_url}}" alt="{{disc.name}} image">
         <div class="card-body">
-            <h4 class="card-title">{{disc.name}}</h4>
-            <h5 class="">{{disc.manufacturers_name}}</h5>
+            <h4 class="card-title"><a href="/discs/{{disc.id}}">{{disc.name.capitalize()}}</a></h4>
+            <h5 class="">{{disc.manufacturers_name.capitalize()}}</h5>
             <ul class="list-group list-group-flush">
             <li class="list-group-item text-primary">Plastic: <span class="text-danger">{{disc.plastic}}</span></li>
+            <li class="list-group-item text-primary">Disc Type: <span class="text-danger">{{disc.disc_type}}</span></li>
             <li class="list-group-item text-primary">Difficulty: <span class="text-danger">{{disc.difficulty}}</span></li>
             <li class="list-group-item text-primary">Speed: <span class="text-danger">{{disc.speed}}</span></li>
             <li class="list-group-item text-primary">Glide: <span class="text-danger">{{disc.glide}}</span></li>

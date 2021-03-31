@@ -1,7 +1,8 @@
 import app
 import random
-from models import db, connect_db, User, Disc, User_Wishlist, User_Disc, Manufacturer, Review, Rec_Disc
+from models import db, connect_db, User, Disc, User_Wishlist, User_Disc, Manufacturer, Disc_Review, Rec_Disc, User_Broken_In_Disc, Review, Broken_In_Review
 import numpy as np
+from datetime import timedelta, datetime
 
 
 def generate_ran_recs(users_discs):
@@ -33,49 +34,6 @@ def generate_ran_recs(users_discs):
         return []
 
 
-# def get_stats(users_discs):
-#     putters = {'total': 0, 'speed_total': 0, 'glide_total': 0, 'l_stability_total': 0, 'h_stability_total': 0}
-#     mids = {'total': 0, 'speed_total': 0, 'glide_total': 0, 'l_stability_total': 0, 'h_stability_total': 0}
-#     f_drivers = {'total': 0, 'speed_total': 0, 'glide_total': 0, 'l_stability_total': 0, 'h_stability_total': 0}
-#     drivers = {'total': 0, 'speed_total': 0, 'glide_total': 0, 'l_stability_total': 0, 'h_stability_total': 0}
-
-#     putters_avg = {'speed_avg': 0, 'glide_avg': 0, 'l_stability_avg': 0, 'h_stability_avg': 0}
-#     mids_avg = {'speed_avg': 0, 'glide_avg': 0, 'l_stability_avg': 0, 'h_stability_avg': 0}
-#     f_drivers_avg = {'speed_avg': 0, 'glide_avg': 0, 'l_stability_avg': 0, 'h_stability_avg': 0}
-#     drivers_avg = {'speed_avg': 0, 'glide_avg': 0, 'l_stability_avg': 0, 'h_stability_avg': 0}
-
-#     for d in users_discs:
-#         if d.disc_type == 'putter':
-#             putters['total'] += 1
-#             putters['speed_total'] += d.speed
-#             putters['glide_total'] += d.glide
-#             putters['l_stability_total'] += d.low_stability
-#             putters['h_stability_total'] += d.high_stability
-#         elif d.disc_type == 'mid':
-#             mids['total'] += 1
-#             mids['speed_total'] += d.speed
-#             mids['glide_total'] += d.glide
-#             mids['l_stability_total'] += d.low_stability
-#             mids['h_stability_total'] += d.high_stability
-#         elif d.disc_type == 'fairway':
-#             f_drivers['total'] += 1
-#             f_drivers['speed_total'] += d.speed
-#             f_drivers['glide_total'] += d.glide
-#             f_drivers['l_stability_total'] += d.low_stability
-#             f_drivers['h_stability_total'] += d.high_stability
-#         elif d.disc_type == 'driver':
-#             drivers['total'] += 1
-#             drivers['speed_total'] += d.speed
-#             drivers['glide_total'] += d.glide
-#             drivers['l_stability_total'] += d.low_stability
-#             drivers['h_stability_total'] += d.high_stability
-
-#         for k, v in putters:
-#             total = putters['total']
-#             if k === 'total':
-#                 continue
-#             else:
-#                 avg = v / total
 
     
 def get_stats(users_discs):
@@ -106,6 +64,24 @@ def get_stats(users_discs):
             discs_avgs[disc_type]['h_stability'] = round(np.mean([d.high_stability for d in discs]), 1)
 
     return discs_avgs
+
+
+
+def populate_broken_in_discs(users_discs, users_broken_in_discs, current_user):
+    broken_in_date = datetime.now() - timedelta(days = 120)
+    broken_in_discs = User_Disc.query.filter(User_Disc.user_id == current_user.id, User_Disc.date_added <= broken_in_date).all()
+    for d in broken_in_discs:
+        disc = Disc.query.get(d.disc_id)
+        if disc in users_broken_in_discs:
+            continue
+        else:
+            broken_in_disc = User_Broken_In_Disc(user_id = current_user.id, disc_id = disc.id)
+            db.session.add(broken_in_disc)
+            db.session.commit()
+
+
+
+
 
 # US_STATES = [
 #     (u'alabama', u'AL'),
