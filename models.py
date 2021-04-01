@@ -6,7 +6,8 @@ from sqlalchemy.sql import func
 from sqlalchemy.ext.declarative import declared_attr
 from flask_login import UserMixin
 from furl import furl
-
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from flask import current_app as app
 
 bcrypt = Bcrypt()
 db = SQLAlchemy()
@@ -137,6 +138,7 @@ class User(UserMixin, db.Model):
     def __repr__(self):
         return f"<User #{self.id}: {self.username}, {self.email}>"
 
+
     def change_password(self, new_password):
         """ Allow a user to create a new password and store it"""
 
@@ -144,6 +146,35 @@ class User(UserMixin, db.Model):
 
         self.password = hashed_pwd
 
+    def get_pw_change_token(self, expires_sec=1800):
+        """ Create a timed sensitive token for a user to be able to reset password"""
+
+        s = Serializer(app.config['SECRET_KEY'], expires_sec)
+        return s.dumps({'user_id': self.id}).decode('utf-8')
+
+
+    def change_pw(self, new_password):
+        """ Hash a users new password from their password reset and adds it to their model """
+
+        hashed_pwd = bcrypt.generate_password_hash(new_password).decode('UTF-8')
+
+        self.password = hashed_pw
+        
+
+
+    @classmethod
+    def verify_token(cls, token):
+        """ Verify reset token is valid """
+
+        s = Serializer(app.config['SECRET_KEY'])
+
+        try:
+            user_id = s.loads(token)['user_id']
+        except:
+            return None
+        return User.query.get(user_id)
+
+  
     @classmethod
     def signup(cls, username, email, first_name, last_name, image_url, location, password):
         """Sign up user.

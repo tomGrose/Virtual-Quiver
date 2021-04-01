@@ -1,9 +1,10 @@
-import app
+from flask import current_app as app
 import random
 from models import db, connect_db, User, Disc, User_Wishlist, User_Disc, Manufacturer, Disc_Review, Rec_Disc, User_Broken_In_Disc, Review, Broken_In_Review
 import numpy as np
 from datetime import timedelta, datetime
-
+from flask_mail import Mail, Message
+from flask import url_for
 
 def generate_ran_recs(users_discs):
     recs = []
@@ -68,6 +69,9 @@ def get_stats(users_discs):
 
 
 def populate_broken_in_discs(users_discs, users_broken_in_discs, current_user):
+    """ Check on the timestamps from when a user added a disc to their quiver. If it is older than 4 months
+    add that disc id and user id to the broken in discs model """
+
     broken_in_date = datetime.now() - timedelta(days = 120)
     broken_in_discs = User_Disc.query.filter(User_Disc.user_id == current_user.id, User_Disc.date_added <= broken_in_date).all()
     for d in broken_in_discs:
@@ -80,8 +84,18 @@ def populate_broken_in_discs(users_discs, users_broken_in_discs, current_user):
             db.session.commit()
 
 
+def send_reset_email(mail, user):
+    token = user.get_pw_change_token()
+    msg = Message('Password Reset Request', 
+        sender='tomrosenbaugh@yahoo.com', 
+        recipients=[user.email])
+    
+    msg.body = f'''To reset your password, please visit this link:
+{url_for('reset_password', token=token, _external=True)}
 
-
+If you did not make this request please ignore this email and no changes will be made to your account.
+'''
+    mail.send(msg)
 
 # US_STATES = [
 #     (u'alabama', u'AL'),

@@ -1,9 +1,9 @@
 from flask_login import LoginManager, current_user
 from flask_wtf import FlaskForm
 from wtforms_alchemy import model_form_factory
-from wtforms import StringField, PasswordField, TextAreaField, BooleanField, SelectField
+from wtforms import StringField, PasswordField, TextAreaField, BooleanField, SelectField, SubmitField
 from wtforms.fields.html5 import DecimalRangeField, IntegerRangeField
-from wtforms.validators import DataRequired, Length, Email, NumberRange
+from wtforms.validators import DataRequired, Length, Email, NumberRange, EqualTo
 from wtforms.widgets import TextArea
 from wtforms_alchemy.fields import QuerySelectField
 from models import Disc, User
@@ -79,9 +79,19 @@ class User_Review(FlaskForm):
                             )
     content = StringField('Review Content', widget=TextArea(), validators=[DataRequired()])
     
+class Forgot_Password_Form(FlaskForm):
+    email = StringField('E-mail', validators=[DataRequired(), Email()])
+    submit = SubmitField('Request Password Reset')
 
-# class Search_Similiar_Disc(FlaskForm):
-#     more_speed =
+    def validate_email(self, email):
+        user = User.query.filter_by(email=email.data).first()
+        if user is None:
+            raise ValidationError('There is no account with that email')
+
+class Reset_Password_Form(FlaskForm):
+    password = PasswordField("New Password", validators=[Length(min=6), DataRequired()])
+    confirm_password = PasswordField("Verify Password", validators=[Length(min=6), DataRequired(), EqualTo('password')])
+    submit = SubmitField('Reset Password')
 
 # class ChangePasswordForm(FlaskForm):
 #     password = PasswordField("Current password", validators=[Length(min=6)])

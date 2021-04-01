@@ -4,11 +4,14 @@ from flask import Flask, render_template, request, flash, redirect, session, g, 
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
 from sqlalchemy import func
-from forms import UserSignupForm, LoginForm, User_Discs_Recs, Disc_Search_Form, Delete_Account, User_Edit_Form, User_Review
-from models import db, connect_db, User, Disc, User_Wishlist, User_Disc, Manufacturer, Disc_Review, Rec_Disc, User_Broken_In_Disc, Review, Broken_In_Review
+from forms import (UserSignupForm, LoginForm, User_Discs_Recs, Disc_Search_Form, Delete_Account, User_Edit_Form, 
+                User_Review, Forgot_Password_Form, Reset_Password_Form) 
+from models import (db, connect_db, User, Disc, User_Wishlist, User_Disc, Manufacturer, 
+                Disc_Review, Rec_Disc, User_Broken_In_Disc, Review, Broken_In_Review)
 from flask_login import LoginManager, login_user, login_required, current_user, logout_user, fresh_login_required
 from datetime import timedelta, datetime
-from helpers import generate_ran_recs, get_stats, populate_broken_in_discs
+from flask_mail import Mail
+from helpers import generate_ran_recs, get_stats, populate_broken_in_discs, send_reset_email
 
 
 app = Flask(__name__)
@@ -16,18 +19,28 @@ app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = (os.environ.get('DATABASE_URL', 'postgres:///virtualQuiver'))
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_ECHO'] = False
+app.config['SQLALCHEMY_ECHO'] = True
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', "SupaSecret")
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=7)
+app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'tomgrosenbaugh@gmail.com'
+app.config['MAIL_PASSWORD'] = '80123Miko?'
+
 toolbar = DebugToolbarExtension(app)
+mail = Mail(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 login_manager.refresh_view = 'login'
 login_manager.needs_refresh_message = 'You must login again before you make any changes'
+
+mail = Mail(app)
+
 
 connect_db(app)
 db.create_all()
@@ -82,6 +95,9 @@ def signup():
 def login():
     """Handle user login."""
 
+    if current_user.is_authenticated:
+        return redirect(url_for('homepage'))
+
     form = LoginForm()
 
     if form.validate_on_submit():
@@ -107,6 +123,8 @@ def logout():
     logout_user()
     flash ("Logged out succesfully!", 'success')
     return redirect("/")
+
+
 
 
 ##############################################################################
@@ -168,6 +186,46 @@ def edit_users_account(user_id):
         return redirect(url_for('show_user_profile', user_id=current_user.id))
 
     return render_template('users/user-edit-form.html', form=form)
+
+
+@app.route('/users/forgot-password', methods=["GET", "POST"])
+def forgot_password_request():
+    """Show form for a user to be able to request a reset password email"""
+
+    if current_user.is_authenticated:
+        return redirect(url_for('homepage'))
+
+    form = Forgot_Password_Form()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        send_reset_email(mail, user)
+        flash('An email has been sent with instructions to reset your password', 'success')
+        return redirect(url_for('homepage'))
+
+    return render_template('users/forgot-password.html', form=form)
+
+@app.route('/users/password-reset/<token>', methods=["GET", "POST"])
+def reset_password(token):
+    """ Provide the user with a page to reset their password if their token is authentic """
+
+    if current_user.is_authenticated:
+        return redirect(url_for('homepage'))
+
+    user = User.verify_token(token)
+
+    if user is None:
+        flash('That is an expired or invalids token', 'danger')
+        return redirect(url_for('forgot_password_request'))
+    
+    form = Reset_Password_Form()
+    if form.validate_on_submit():
+        new_password = form.password.data
+        user.change_password(new_password)
+        db.session.commit()
+        flash('Your password has been updated, you are now able to login', 'success')
+        return redirect(url_for('login'))
+
+    return render_template('users/reset-password.html', form=form)
 
 # ##############################################################################
 # # Disc routes:
@@ -351,10 +409,18 @@ def show_disc_page(disc_id):
 
     form = User_Review()
     disc = Disc.query.get_or_404(disc_id)
+
     if form.validate_on_submit():
         title = form.title.data
         content = form.content.data
-        review = Review(user_id=current_user.id, username=current_user.username, disc_id=disc.id, title=title, content=content)
+        throw_type = form.throw_type.data
+        review = Review(user_id=current_user.id, 
+                    username=current_user.username, 
+                    disc_id=disc.id, 
+                    title=title, 
+                    throw_type=throw_type, 
+                    content=content)
+
         db.session.add(review)
         db.session.commit()
         flash("Review Added!", "success")
