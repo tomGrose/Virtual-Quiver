@@ -414,6 +414,7 @@ class Review(Disc_Review):
     )
 
 class Broken_In_Review(Disc_Review):
+    """ Model for holding the reviews a user can leave after owning a disc for four months """
 
     __tablename__ = 'broken_in_reviews'
 
@@ -423,6 +424,8 @@ class Broken_In_Review(Disc_Review):
     )
 
 class Rec_Disc(Disc, db.Model):
+    """ Abstract model for a disc based on its reccomendation """
+
     __abstract__ = True
 
     id = db.Column(db.Integer)

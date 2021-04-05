@@ -12,7 +12,7 @@
                 <li class="list-group-item text-primary">Email: <span class="text-danger">{{user.email}}</span> <span class="edit-pen"><a href="/users/edit/{{current_user.id}}"><i class="fas fa-pen"></i></a></li>
                 <li class="list-group-item text-primary">Username: <span class="text-danger">{{user.username}}</span class="edit-pen"> <span><a href="/users/edit/{{current_user.id}}"><i class="fas fa-pen"></i></a></span></li>
                 </ul>
-                <button class="btn btn-info">Change Password</button>
+                <a href="/users/password-change/{{user.id}}" class="btn btn-info">Change Password</a>
                 <button class="btn btn-danger" id="account-delete-btn">Delete Account</button>
             </div>
             <form method="POST" action="/users/delete" id='account-delete-form' hidden>

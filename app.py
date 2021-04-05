@@ -5,7 +5,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
 from sqlalchemy import func
 from forms import (UserSignupForm, LoginForm, User_Discs_Recs, Disc_Search_Form, Delete_Account, User_Edit_Form, 
-                User_Review, Forgot_Password_Form, Reset_Password_Form) 
+                User_Review, Forgot_Password_Form, Reset_Password_Form, Change_Password_Form) 
 from models import (db, connect_db, User, Disc, User_Wishlist, User_Disc, Manufacturer, 
                 Disc_Review, Rec_Disc, User_Broken_In_Disc, Review, Broken_In_Review)
 from flask_login import LoginManager, login_user, login_required, current_user, logout_user, fresh_login_required
@@ -40,7 +40,6 @@ login_manager.refresh_view = 'login'
 login_manager.needs_refresh_message = 'You must login again before you make any changes'
 
 mail = Mail(app)
-
 
 connect_db(app)
 db.create_all()
@@ -133,6 +132,7 @@ def logout():
 @app.route('/users/profile/<int:user_id>')
 @login_required
 def show_user_profile(user_id):
+    """ Show a user's profile page """
 
     form = Delete_Account()
     return render_template('users/profile-settings.html', user=current_user, form=form)
@@ -227,6 +227,31 @@ def reset_password(token):
 
     return render_template('users/reset-password.html', form=form)
 
+@app.route('/users/password-change/<int:user_id>', methods=["GET", "POST"])
+@fresh_login_required
+def change_password(user_id):
+    """ Provide the user with a page to change their password when already logged in """
+
+    if user_id != current_user.id:
+        flash('You do not have permission to access this page', 'danger')
+        return redirect(url_for('homepage'))
+
+    form = Change_Password_Form()
+    if form.validate_on_submit():
+        current_password = form.current_password.data
+        if User.authenticate(current_user.username, current_password):
+            new_password = form.password.data
+            current_user.change_password(new_password)
+            db.session.commit()
+            flash('Your password has been updated', 'success')
+            return redirect(url_for('login'))
+        else:
+            form.current_password.errors.append('Password Incorrect!')
+    return render_template('users/reset-password.html', form=form)
+        
+
+    
+
 # ##############################################################################
 # # Disc routes:
 
@@ -301,6 +326,7 @@ def add_users_disc():
     resp = jsonify({"disc_added": "Success"})
     return (resp, 201)
 
+
 @app.route('/discs/remove', methods=['POST'])
 @login_required
 def remove_users_disc():
@@ -355,6 +381,7 @@ def search_discs():
 
     return render_template('discs/discover-discs.html', discs=discs, users_discs=user_discs, user_wishes=user_wishes)
 
+
 @app.route('/discs/recommendations/disc/<int:disc_id>/page/<int:page_num>', methods=['GET', 'POST'])
 @login_required
 def show_similiar_discs(disc_id, page_num):
@@ -372,6 +399,7 @@ def show_similiar_discs(disc_id, page_num):
                         .paginate(per_page=20, page=page_num, error_out=True))
 
     return render_template('discs/disc-recommendations.html', disc=disc, threads=similiar_discs_threads, form=form)
+
 
 @app.route('/discs/recommendations', methods=['GET', 'POST'])
 @login_required
@@ -393,6 +421,7 @@ def show_users_recommendations():
 
         return render_template('discs/disc-recommendations.html', disc=disc, threads=similiar_discs_threads, form=form)
     return render_template('discs/users-recommendations.html', discs=rec_discs, form=form)
+
 
 @app.route('/discs/wishlist')
 @login_required
@@ -462,9 +491,6 @@ def leave_broken_in_review(disc_id):
     return render_template('discs/disc-broken-in-review.html', form=form)
 
 
-
-
-
 # ##############################################################################
 # # Homepage and error pages
 
@@ -495,6 +521,7 @@ def homepage():
 def show_about():
     """ SHow about page for the website"""
     return render_template('about.html')
+
 
 @app.route('/information')
 def show_info():
