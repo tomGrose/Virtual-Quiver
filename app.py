@@ -5,13 +5,13 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
 from sqlalchemy import func
 from forms import (UserSignupForm, LoginForm, User_Discs_Recs, Disc_Search_Form, Delete_Account, User_Edit_Form, 
-                User_Review, Forgot_Password_Form, Reset_Password_Form, Change_Password_Form) 
+                User_Review, Forgot_Form, Reset_Password_Form, Change_Password_Form) 
 from models import (db, connect_db, User, Disc, User_Wishlist, User_Disc, Manufacturer, 
                 Disc_Review, Rec_Disc, User_Broken_In_Disc, Review, Broken_In_Review)
 from flask_login import LoginManager, login_user, login_required, current_user, logout_user, fresh_login_required
 from datetime import timedelta, datetime
 from flask_mail import Mail
-from helpers import generate_ran_recs, get_stats, populate_broken_in_discs, send_reset_email
+from helpers import generate_ran_recs, get_stats, populate_broken_in_discs, send_reset_email, send_username_reminder
 
 
 app = Flask(__name__)
@@ -19,7 +19,7 @@ app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = (os.environ.get('DATABASE_URL', 'postgres:///virtualQuiver'))
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_ECHO'] = True
+app.config['SQLALCHEMY_ECHO'] = False
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', "SupaSecret")
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
@@ -27,8 +27,8 @@ app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=7)
 app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'tomgrosenbaugh@gmail.com'
-app.config['MAIL_PASSWORD'] = '80123Miko?'
+app.config['MAIL_USERNAME'] = 'virtualquiverdiscs@gmail.com'
+app.config['MAIL_PASSWORD'] = '80222Denver!'
 
 toolbar = DebugToolbarExtension(app)
 mail = Mail(app)
@@ -136,6 +136,7 @@ def show_user_profile(user_id):
 
     form = Delete_Account()
     return render_template('users/profile-settings.html', user=current_user, form=form)
+
         
 @app.route('/users/delete', methods=['POST'])
 @login_required
@@ -204,6 +205,24 @@ def forgot_password_request():
 
     return render_template('users/forgot-password.html', form=form)
 
+
+@app.route('/users/forgot-username', methods=["GET", "POST"])
+def forgot_username():
+    """Show form for a user to be able to request a reset password email"""
+
+    if current_user.is_authenticated:
+        return redirect(url_for('homepage'))
+
+    form = Forgot_Form()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        send_username_reminder(mail, user)
+        flash('An email has been sent with your username', 'success')
+        return redirect(url_for('homepage'))
+
+    return render_template('users/forgot-username.html', form=form)
+
+
 @app.route('/users/password-reset/<token>', methods=["GET", "POST"])
 def reset_password(token):
     """ Provide the user with a page to reset their password if their token is authentic """
@@ -226,6 +245,7 @@ def reset_password(token):
         return redirect(url_for('login'))
 
     return render_template('users/reset-password.html', form=form)
+
 
 @app.route('/users/password-change/<int:user_id>', methods=["GET", "POST"])
 @fresh_login_required
@@ -260,7 +280,7 @@ def show_discs(page_num):
     """ Show all the discs in the database, allow users to search for discs using filters. If a user is
     logged in they will be able to add the discs to their bag, or wishlist """
 
-    discs = (Disc.query.paginate(per_page=20, page=page_num, error_out=True))
+    discs = (Disc.query.paginate(per_page=21, page=page_num, error_out=True))
     user_discs = []
     user_wishes = []
 
@@ -297,7 +317,7 @@ def show_discs(page_num):
          
 
         search_discs = (Disc.query.filter_by(**filters)
-                                            .paginate(per_page=20, page=page_num, error_out=True))
+                                            .paginate(per_page=21, page=page_num, error_out=True))
 
     
         return render_template('discs/discover-discs.html', 
@@ -320,9 +340,16 @@ def add_users_disc():
 
     disc_id = request.json.get('disc_id')
     disc = Disc.query.get_or_404(disc_id)
+
+    if disc in current_user.wish_discs:
+        wish_disc = User_Wishlist.query.filter_by(user_id = f'{current_user.id}', disc_id = f'{disc.id}').first()
+        db.session.delete(wish_disc)
+        db.session.commit()
+
     users_new_disc = User_Disc(user_id=current_user.id, disc_id=disc.id)
     db.session.add(users_new_disc)
     db.session.commit()
+
     resp = jsonify({"disc_added": "Success"})
     return (resp, 201)
 
@@ -370,16 +397,17 @@ def search_discs():
     """ View to handle users searching for discs with the search bar """
 
     disc_name = request.args.get('disc_name')
-    discs = Disc.query.filter(Disc.name.like(f"%{disc_name}%")).all()
+    discs = (Disc.query.filter(Disc.name.like(f"%{disc_name}%")).paginate(per_page=21, page=1, error_out=True))
     user_discs = []
     user_wishes = []
+    form = Disc_Search_Form()
 
     if current_user.is_authenticated:
         user = User.query.get(current_user.id)
         user_discs = user.discs
         user_wishes = user.wish_discs
 
-    return render_template('discs/discover-discs.html', discs=discs, users_discs=user_discs, user_wishes=user_wishes)
+    return render_template('discs/discover-discs.html', threads=discs, users_discs=user_discs, user_wishes=user_wishes, form=form)
 
 
 @app.route('/discs/recommendations/disc/<int:disc_id>/page/<int:page_num>', methods=['GET', 'POST'])
@@ -396,7 +424,7 @@ def show_similiar_discs(disc_id, page_num):
                         high_stability=f'{disc.high_stability}', 
                         low_stability=f'{disc.low_stability}')
                         .filter(Disc.name != f"{disc.name}")
-                        .paginate(per_page=20, page=page_num, error_out=True))
+                        .paginate(per_page=21, page=page_num, error_out=True))
 
     return render_template('discs/disc-recommendations.html', disc=disc, threads=similiar_discs_threads, form=form)
 
@@ -417,7 +445,7 @@ def show_users_recommendations():
                         high_stability=f'{disc.high_stability}', 
                         low_stability=f'{disc.low_stability}')
                         .filter(Disc.name != f"{disc.name}")
-                        .paginate(per_page=20, page=page_num, error_out=True))
+                        .paginate(per_page=21, page=page_num, error_out=True))
 
         return render_template('discs/disc-recommendations.html', disc=disc, threads=similiar_discs_threads, form=form)
     return render_template('discs/users-recommendations.html', discs=rec_discs, form=form)
@@ -455,6 +483,8 @@ def show_disc_page(disc_id):
         flash("Review Added!", "success")
         return redirect(url_for('show_disc_page', disc_id=disc.id))
     
+    users_discs = current_user.discs
+    users_wish_discs = current_user.wish_discs
     disc_in_bag_count = User_Disc.query.filter_by(disc_id = f'{disc.id}').count()
     disc_in_wish_count = User_Wishlist.query.filter_by(disc_id = f'{disc.id}').count()
     reviews = Review.query.filter_by(disc_id=f'{disc.id}').all()
@@ -465,7 +495,9 @@ def show_disc_page(disc_id):
                             broken_in_reviews=broken_in_reviews, 
                             form=form, 
                             disc_count=disc_in_bag_count, 
-                            wish_count=disc_in_wish_count)
+                            wish_count=disc_in_wish_count,
+                            users_discs = users_discs,
+                            users_wish_discs = users_wish_discs)
 
 
 @app.route('/discs/review/<int:disc_id>', methods=['POST', 'GET'])

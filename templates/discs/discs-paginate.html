@@ -1,18 +1,25 @@
 <div class="container">
     <div class="row">
         <div class="col-10 m-5">
-            {% for page in threads.iter_pages() %}
+            <ul class="pagination">
+                {% for page in threads.iter_pages() %}
                 {% if page %}
-                    {% if request.endpoint == 'show_discs' %}
-                        <a href="{{ url_for('show_discs', page_num=page) }}">{{ page }}</a>
-                    {% elif request.endpoint == 'show_similiar_discs' %}
-                        <a href="{{url_for('show_similiar_discs', disc_id=disc.id, page_num=page)}}">{{ page }}</a>
+                    {% if page == threads.page %}
+                        <li class="page-item "><span class="page-link bg-primary text-light">{{ page }}</span></li>
+                    {% else %}
+                        {% if request.endpoint == 'show_discs' %}
+                            <li class="page-item"><a class="page-link border-primary" href="{{ url_for('show_discs', page_num=page) }}">{{ page }}</a></li>
+                        {% elif request.endpoint == 'show_similiar_discs' %}
+                            <li class="page-item"><a class="page-link border-primary" href="{{url_for('show_similiar_discs', disc_id=disc.id, page_num=page)}}">{{ page }}</a></li>
+                        {% endif %}
                     {% endif %}
+                    
                 {% else %}
-                    ...
+                    <li class="page-item"><span class="page-link border-primary">...</span></li>
                 {% endif %}
 
-            {% endfor %}
+                {% endfor %}
+            </ul>
         </div>
     </div>
 </div>

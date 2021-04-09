@@ -1,56 +1,113 @@
 {% extends 'base.html' %}
 {% block content %}
-    <h3>Showing random recommendations based off the discs you already have.</h3>
-    {% include 'users/form.html' %}
-    <div class="container">
-        <div class="row" id="discs-display-container">
-            {% if discs|length == 0 %}
-            <div class="col-12">
-                <p>
-                  You have not added any discs to your quiver yet! Head over to 
-                  <span><a href="/discs/discover/page/1">discover</a></span> 
-                  to add discs to your quiver to see a randomized list of recommended discs here. 
-                  You will even be able to individually select a disc from your quiver to see more discs like it!
-                </p>
+<div class="container-fluid jumbo-header landing-greeter" id="recommendations-header" >
+    
+</div>
+<div class="container-fluid bg-primary">
+    <div class="row">
+      <div class="col-12">
+        <hr class="border-primary">
+      </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+        </div>
+    </div>
+</div>
+<div class="container-fluid my-3">
+    <div class="row">
+        <div class="col-4">
+            <h2 class="display-4 mx-2">Recommendations</h2>
+        </div>
+    </div>
+    <hr class="border-primary mx-3">
+</div>
+
+<div class="container-fluid my-4">
+    <div class="row" id="discs-display-container">
+        <div class="col-2">
+            <div class="row">
+                <div class="col-12 bg-secondary text-light p-3">
+                    <p class="lead">
+                        This page is a random assortment of recommendations for discs based off of what you already have in your quiver.
+                        Use the box below to choose a disc from your quiver to see recommendations based solely on that disc.
+                    </p>
+                    {% include 'users/form.html' %}
+                </div>
             </div>
-            {% else %}
-            {% for d in discs %}
-            <div class="col-4">
-                <div class="card" style="width: 18rem;" id="{{d.id}}-card">
-                    <img class="card-img-top" src="{{d.image_url}}" alt="{{d.name}} image">
-                    <div class="card-body">
-                        <h4 class="card-title"><a href="/discs/{{d.id}}"><a href="/discs/{{d.id}}">{{d.name.capitalize()}}</a></a></h4>
-                        <h5 class="">{{d.manufacturers_name.capitalize()}}</h5>
-                        <ul class="list-group list-group-flush">
-                        <li class="list-group-item text-primary">Plastic: <span class="text-danger">{{d.plastic}}</span></li>
-                        <li class="list-group-item text-primary">Disc Type: <span class="text-danger">{{d.disc_type}}</span></li>
-                        <li class="list-group-item text-primary">Difficulty: <span class="text-danger">{{d.difficulty}}</span></li>
-                        <li class="list-group-item text-primary">Speed: <span class="text-danger">{{d.speed}}</span></li>
-                        <li class="list-group-item text-primary">Glide: <span class="text-danger">{{d.glide}}</span></li>
-                        <li class="list-group-item text-primary">Low Stability: <span class="text-danger">{{d.low_stability}}</span></li>
-                        <li class="list-group-item text-primary">High Stability: <span class="text-danger">{{d.high_stability}}</span></li>
-                        {% if d.disc_rec_based_on %}
-                        <li class="list-group-item text-primary">Recommendation based on: <span class="text-danger">{{d.disc_rec_based_on}}</span></li>
-                        {% endif %}
-                        </ul>
-                        {% if current_user.is_authenticated %}
-                            {% if d in users_discs %}
-                                <div class="btn btn-success">Disc already in your quiver!</div>
-                            {% elif d not in users_discs and d in user_wishes %}
-                                <button data-id="{{d.id}}" data-button-type="add-to-bag" class="btn btn-primary">Add to Bag</button>
-                                <div class="btn btn-success">Disc in your wishlist!</div>
-                            {% else %}
-                                <button data-id="{{d.id}}" data-button-type="add-to-bag" class="btn btn-primary">Add to Bag</button>
-                                <button data-id="{{d.id}}" data-button-type="add-to-wishlist" class="btn btn-success">Wishlist</button>
-                            {% endif %}
-                        {% endif %}
+        </div>
+        <div class="col-10">
+            {% if discs|length == 0 %}
+            <div class="row d-flex justify-content-center">
+                <div class="col-6">
+                    <div class="alert alert-warning">
+                        <h4>You have not added any discs to your quiver yet!</h4>
+                        <p>
+                          To get started, head over to 
+                          <span><a href="/discs/discover/page/1">discover</a></span> 
+                          to add discs to your quiver to see a randomized list of recommended discs here. 
+                          You will even be able to individually select a disc from your quiver to see more discs like it!
+                        </p>
                     </div>
                 </div>
             </div>
+            {% else %}
+            <div class="row">
+                {% for d in discs %}
+                <div class="col-4">
+                    <div class="card" id="{{d.id}}-card">
+                        <img class="card-img-top disc-img" src="{{d.image_url}}" alt="{{d.name}} image">
+                        <div class="card-body">
+                            <h4 class="card-title"><a href="/discs/{{d.id}}"><a href="/discs/{{d.id}}">{{d.name.capitalize()}}</a></a></h4>
+                            <h5 class="">{{d.manufacturers_name.capitalize()}}</h5>
+                            <ul class="list-group list-group-flush">
+                            <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Plastic: <span class="text-info">{{d.plastic.capitalize()}}</span></li>
+                            <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Disc Type: <span class="text-info">{{d.disc_type}}</span></li>
+                            <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Difficulty: <span class="badge badge-primary badge-pill">{{d.difficulty}}</span></li>
+                            <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Speed: <span class="badge badge-primary badge-pill">{{d.speed}}</span></li>
+                            <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Glide: <span class="badge badge-primary badge-pill">{{d.glide}}</span></li>
+                            <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Low Stability: <span class="badge badge-primary badge-pill">{{d.low_stability}}</span></li>
+                            <li class="list-group-item text-primary d-flex justify-content-between align-items-center">High Stability: <span class="badge badge-primary badge-pill">{{d.high_stability}}</span></li>
+                            {% if d.disc_rec_based_on %}
+                            <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Based on: <span class="text-info">{{d.disc_rec_based_on.capitalize()}}</span></li>
+                            {% endif %}
+                            </ul>
+                            {% if current_user.is_authenticated %}
+                                {% if d in users_discs %}
+                                    <div class="btn btn-success">Disc already in your quiver!</div>
+                                {% elif d not in users_discs and d in user_wishes %}
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <button data-id="{{d.id}}" data-button-type="add-to-bag" class="btn btn-primary w-100">Add to Bag</button>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="btn btn-success">Disc in your wishlist!</div>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                <div class="row">
+                                    <div class="col-12">
+                                        <button data-id="{{d.id}}" data-button-type="add-to-bag" class="btn btn-primary w-100">Add to Quiver</button>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <button data-id="{{d.id}}" data-button-type="add-to-wishlist" id="wish-{{d.id}}" class="btn btn-success w-100">Wishlist</button>
+                                    </div>
+                                </div>  
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
             {% endfor %}
+            </div>
             {% endif %}
         </div>
     </div>
+</div>
 
     
 {% endblock %}

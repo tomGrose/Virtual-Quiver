@@ -3,15 +3,23 @@ from flask_wtf import FlaskForm
 from wtforms_alchemy import model_form_factory
 from wtforms import StringField, PasswordField, TextAreaField, BooleanField, SelectField, SubmitField
 from wtforms.fields.html5 import DecimalRangeField, IntegerRangeField
-from wtforms.validators import DataRequired, Length, Email, NumberRange, EqualTo
+from wtforms.validators import DataRequired, Length, Email, NumberRange, EqualTo, ValidationError
 from wtforms.widgets import TextArea
 from wtforms_alchemy.fields import QuerySelectField
-from models import Disc, User
+from models import Disc, User, Innapropriate_Word
 
 BaseModelForm = model_form_factory(FlaskForm)
 
+### HELPER FUNCTIONS ###
+
 def choice_query():
     return current_user.discs
+
+def check_vulgar_words(form, field):
+        content = field.data
+        for w in Innapropriate_Word.query.all():
+            if w.word in content:
+                raise ValidationError(f'{w.word} is not allowed')
 
 class UserSignupForm(BaseModelForm):
     """Form for adding users."""
@@ -19,6 +27,20 @@ class UserSignupForm(BaseModelForm):
     class Meta:
         model = User
         exclude = ['alternate_id']
+
+    def validate_username(self, username):
+        username = username.data
+        if " " in username:
+            raise ValidationError('No spaces in usernames')
+        else:
+            for w in Innapropriate_Word.query.all():
+                if w.word in username:
+                    raise ValidationError(f'{w.word} is not allowed')
+
+    def validate_password(self, password):
+        username = username.data
+        if " " in username:
+            raise ValidationError('No spaces in passwords')
 
 
 class LoginForm(FlaskForm):
@@ -60,8 +82,9 @@ class Disc_Search_Form(FlaskForm):
 class Delete_Account(FlaskForm):
     delete = BooleanField('Yes, delete my account.')
 
+
 class User_Edit_Form(FlaskForm):
-    username = StringField('Username', validators=[DataRequired()])
+    username = StringField('Username', validators=[DataRequired(), check_vulgar_words])
     email = StringField('E-mail', validators=[DataRequired(), Email()])
     first_name = StringField('First Name', validators=[DataRequired()])
     last_name = StringField('Last Name', validators=[DataRequired()])
@@ -70,18 +93,17 @@ class User_Edit_Form(FlaskForm):
 
 
 class User_Review(FlaskForm):
-    title = StringField('Review Title', validators=[DataRequired(), Length(max=60)])
+    title = StringField('Review Title', validators=[DataRequired(), Length(max=60), check_vulgar_words])
     throw_type = SelectField('Throw Type', 
                             choices=[
                             ('backhand', 'Backhand'), 
                             ('forehand', 'Forehand')],
                             validators=[DataRequired()]
                             )
-    content = StringField('Review Content', widget=TextArea(), validators=[DataRequired()])
+    content = StringField('Review Content', widget=TextArea(), validators=[DataRequired(), check_vulgar_words])
     
-class Forgot_Password_Form(FlaskForm):
+class Forgot_Form(FlaskForm):
     email = StringField('E-mail', validators=[DataRequired(), Email()])
-    submit = SubmitField('Request Password Reset')
 
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()

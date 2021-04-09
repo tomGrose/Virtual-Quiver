@@ -1,51 +1,137 @@
 {% extends 'base.html' %}
 {% block content %}
-    <h2>Discover your new favorite disc</h2>
-    <div class="container">
-        <form method="POST">
-            {{ form.hidden_tag() }}
-            {% for field in form if field.widget.input_type != 'hidden' %}
-                {% for error in field.errors %}
-                    <span class="text-danger">{{ error }}</span>
-                {% endfor %}
-                <!-- {{ field.label }} -->
+<div class="container-fluid jumbo-header landing-greeter" id="discover-header" >
+    <div class="text-center text-dark" id="greeter-text">
+      
+    </div>
+</div>
+<div class="container-fluid bg-primary">
+    <div class="row">
+      <div class="col-12">
+        <hr class="border-primary">
+      </div>
+    </div>
+</div>
+<div class="container-flex mt-4">
+    <div class="row">
+        <div class="col-6 ml-3">
+            <h2 class="display-4">Discover your new favorite disc</h2>
+        </div>
+    </div>
+</div>
+<hr class="border-primary mx-4">
+<div class="flex-container my-5">
+    <div class="row m-4">
+        <div class="col-3">
+            <form method="POST">
+                {{ form.hidden_tag() }}
                 <div class="row">
-                    <div class="col-10">
-                        {% if field.label.text == "Difficulty" %}
-                            <span>0 - 6</span>
-                            {{ form.difficulty_check.label }}: {{ form.difficulty_check() }}
-                            {{ field(placeholder=field.label.text, class="form-control", min='0', max='6', oninput="difficultyIdVal.value = difficultyId.value") }}
-                        {% elif field.label.text == "Speed" %}
-                            <span>1 - 14</span>
-                            {{ form.speed_check.label }}: {{ form.speed_check() }}
-                            {{ field(placeholder=field.label.text, class="form-control", min='1', max='14', oninput="speedIdVal.value = speedId.value") }}
-                        {% elif field.label.text == "Glide" %}
-                            <span>1 - 7</span>
-                            {{ form.glide_check.label }}: {{ form.glide_check() }}
-                            {{ field(placeholder=field.label.text, class="form-control", min='1', max='7', oninput="glideIdVal.value = glideId.value") }}
-                        {% elif field.label.text == "High Stability" %}
-                            <span>-5 - 1</span>
-                            {{ form.h_stability_check.label }}: {{ form.h_stability_check() }}
-                            {{ field(placeholder=field.label.text, class="form-control", min='-5', max='1', oninput="high_stabilityIdVal.value = high_stabilityId.value") }}
-                        {% elif field.label.text == "Low Stability" %}
-                            <span>0 - 5</span>
-                            {{ form.l_stability_check.label }}: {{ form.l_stability_check() }}
-                            {{ field(placeholder=field.label.text, class="form-control", min='0', max='5', oninput="low_stabilityIdVal.value = low_stabilityId.value") }}
-                        {% endif %}
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                        {{ form.difficulty_check.label }} {{ form.difficulty_check }}
                     </div>
-                    <div class="col-2">
-                        <output name="{{field.name}}" id="{{field.name}}IdVal"></output>
-                        <p class="search-value" id="{{field.name}}-value"></p>
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                        <p>0 - 6</p>
+                    </div>
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                        {{ form.difficulty(class="form-control w-75", min="0", max="6", oninput="difficultyIdVal.value = difficultyId.value")}}
+                        <span class="">
+                            <output name="difficulty" id="difficultyIdVal" class="badge badge-primary badge-pill"></output>
+                            <p class="search-value badge badge-primary badge-pill" id="difficulty-value"></p>
+                        </span>
                     </div>
                 </div>
-            {% endfor %}
-            {{ form.disc_type.label }}: {{ form.disc_type() }}
-            <button type="submit" class="btn btn-success">Submit</button>
-        </form>
+                <hr>
+                <div class="row">
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                        {{ form.speed_check.label }} {{ form.speed_check}}
+                    </div>
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                        <p>1 - 14</p>
+                    </div>
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                        {{ form.speed(class="form-control w-75", min="1", max="14", oninput="speedIdVal.value = speedId.value")}}
+                        <span class="">
+                            <output name="speed" id="speedIdVal" class="badge badge-primary badge-pill"></output>
+                            <p class="search-value badge badge-primary badge-pill" id="speed-value"></p>
+                        </span>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                        {{ form.glide_check.label }} {{ form.glide_check}}
+                    </div>
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                        <p>1 - 7</p>
+                    </div>
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                        {{ form.glide(class="form-control w-75", min="1", max="7", oninput="glideIdVal.value = glideId.value")}}
+                        <span class="">
+                            <output name="glide" id="glideIdVal" class="badge badge-primary badge-pill"></output>
+                            <p class="search-value badge badge-primary badge-pill" id="glide-value"></p>
+                        </span>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                        {{ form.l_stability_check.label }} {{ form.l_stability_check}}
+                    </div>
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                        <p>0 - 5</p>
+                    </div>
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                        {{ form.low_stability(class="form-control w-75", min="0", max="5", oninput="low_stabilityIdVal.value = low_stabilityId.value")}}
+                        <span class="">
+                            <output name="low_stability" id="low_stabilityIdVal" class="badge badge-primary badge-pill"></output>
+                            <p class="search-value badge badge-primary badge-pill" id="low_stability-value"></p>
+                        </span>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                        {{ form.h_stability_check.label }} {{ form.h_stability_check}}
+                    </div>
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                        <p>-5 - 1</p>
+                    </div>
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                        {{ form.high_stability(class="form-control w-75", min="-5", max="1", oninput="high_stabilityIdVal.value = high_stabilityId.value")}}
+                        <span class="">
+                            <output name="high_stability" id="high_stabilityIdVal" class="badge badge-primary badge-pill"></output>
+                            <p class="search-value badge badge-primary badge-pill" id="high_stability-value"></p>
+                        </span>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                        {{ form.disc_type.label }} {{ form.disc_type(class="form-control w-75")}}
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-9">
+            {% if threads.items|length == 0 %}
+                <div class="text-center w-75 m-auto alert alert-danger" role="alert">
+                    Sorry there were no discs that matched your search results! Please try some different parameters, and remember to check/uncheck the different parameters.
+                </div>
+            {% else %}
+                {% include 'discs/discs-display.html' %}
+                {% include 'discs/discs-paginate.html' %}
+            {% endif %}
+        </div>
     </div>
-    
-    {% include 'discs/discs-display.html' %}
-    {% include 'discs/discs-paginate.html' %}
+</div>
+
+
     
     
 {% endblock %}

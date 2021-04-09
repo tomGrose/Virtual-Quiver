@@ -1,133 +1,196 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container-fluid" id="landing-greeter" >
-    <h2>Welcome {{user.username}}</h2>
-    <p>Lets find some discs!</p>
+
+<div class="container-fluid jumbo-header landing-greeter" id="landing-greeter-logged-in" >
+  <div class="text-center text-dark" id="greeter-text">
+    
+  </div>
 </div>
-<div class="container">
-    <h2>{{user.username}}'s Quiver</h2>
-    <form action="form-control">
-        <select id="home-view-select" class="form-control">
-            <option value="quiver">View Quiver</option>
-            <option value="wishlist">View Wishlist</option>
-        </select>
-    </form>
+<div class="container-fluid bg-primary">
+  <div class="row">
+    <div class="col-12">
+      <hr class="border-primary">
+    </div>
+  </div>
+</div>
+<div class="container-fluid my-4">
+  <div class="row d-flex justify-content-center">
+    <div class="col-6 text-center">
+      <h2 class="display-4">{{user.username}}'s Quiver</h2>
+      <form action="form-control">
+          <select id="home-view-select" class="form-control">
+              <option value="quiver">View Quiver</option>
+              <option value="wishlist">View Wishlist</option>
+          </select>
+      </form>
+    </div>
+  </div>
+  <hr class="border-primary mt-5 mx-5">
 </div>
 
-<div class="row justify-content-center mt-3" id="discs-display-container">
+<div class="row justify-content-center my-5 mx-3" id="discs-display-container">
     {% if users_discs|length == 0 %}
-    <div class="col-12">
-      <p>
-        You have not added any discs to your quiver yet! Head over to 
-        <span><a href="/discs/discover/page/1">discover</a></span> 
-        to search for discs you already own to add to your collection. 
-        You can also use the searchbar up top to search for discs by name.
-      </p>
+    <div class="col-6">
+      <div class="alert alert-warning m-auto">
+          <h4>Looks like you haven't added any discs yet!</h4>
+          <p>
+            To get started, head over to 
+            <span><a href="/discs/discover/page/1">discover</a></span> 
+            to search for discs you already own to add to your collection. 
+            You can also use the searchbar up top to search for discs by name.
+          </p>
+      </div>
     </div>
     {% else %}
     {% for d in users_discs %}
-    <div class="col-3">
-        <div class="card" style="width: 20rem; margin: 2% auto 2% auto;" id="{{d.id}}-card">
-            <img class="card-img-top" src="{{d.image_url}}" alt="{{d.name}} image">
-            <div class="card-body">
+    <div class="col-3 m-3" id="{{d.id}}-card">
+        <div class="card border-secondary">
+            <div class="row">
+              <div class="col-5 ml-3">
+                <img class="card-img-top disc-img" src="{{d.image_url}}" alt="{{d.name}} image">
                 <h4 class="card-title"><a href="/discs/{{d.id}}">{{d.name.capitalize()}}</a></h4>
                 <h5 class="">{{d.manufacturers_name.capitalize()}}</h5>
-                <ul class="list-group list-group-flush">
-                <li class="list-group-item text-primary">Plastic: <span class="text-danger">{{d.plastic}}</span></li>
-                <li class="list-group-item text-primary">Disc Type: <span class="text-danger">{{d.disc_type}}</span></li>
-                <li class="list-group-item text-primary">Difficulty: <span class="text-danger">{{d.difficulty}}</span></li>
-                <li class="list-group-item text-primary">Speed: <span class="text-danger">{{d.speed}}</span></li>
-                <li class="list-group-item text-primary">Glide: <span class="text-danger">{{d.glide}}</span></li>
-                <li class="list-group-item text-primary">Low Stability: <span class="text-danger">{{d.low_stability}}</span></li>
-                <li class="list-group-item text-primary">High Stability: <span class="text-danger">{{d.high_stability}}</span></li>
-                </ul>
-                <a href="/discs/recommendations/disc/{{d.id}}/page/1"><button type="submit" class="btn btn-info">See similiar discs</button></a>
-                <button data-id="{{d.id}}" data-button-type="remove-from-bag" class="btn btn-danger">Remove from Quiver</button>
-                {% if d in broken_in_discs %}
-                <a href="/discs/review/{{d.id}}" class="btn btn-success">Leave a broken in Review</a>
-                {% endif %}
+              </div>
+              <div class="col">
+                <div class="card-body">
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Plastic: <span class="text-info">{{d.plastic.capitalize()}}</span></li>
+                    <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Disc Type: <span class="text-info">{{d.disc_type.capitalize()}}</span></li>
+                    <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Difficulty: <span class="badge badge-primary">{{d.difficulty}}</span></li>
+                    <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Speed: <span class="badge badge-primary">{{d.speed}}</span></li>
+                    <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Glide: <span class="badge badge-primary">{{d.glide}}</span></li>
+                    <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Low Stability: <span class="badge badge-primary">{{d.low_stability}}</span></li>
+                    <li class="list-group-item text-primary d-flex justify-content-between align-items-center">High Stability: <span class="badge badge-primary">{{d.high_stability}}</span></li>
+                  </ul>
+                </div>
+              </div>
             </div>
+            <div class="row">
+              <div class="col-12">
+                <a href="/discs/recommendations/disc/{{d.id}}/page/1"><button type="submit" class="btn btn-primary w-100">Similiar discs</button></a>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <button data-id="{{d.id}}" data-button-type="remove-from-bag" class="btn btn-warning w-100">Remove from Quiver</button>
+              </div>
+            </div>
+            {% if d in broken_in_discs %}
+            <div class="row">
+              <div class="col-12">
+                <a href="/discs/review/{{d.id}}" class="btn btn-primary w-100">Leave a broken in Review</a>
+              </div>
+            </div>
+            {% endif %}
+            
         </div>
     </div>
     {% endfor %}
     {% endif %}
 </div>
-<div class="row justify-content-center mt-3" id="users-wishlist-container" hidden>
+
+<div class="row justify-content-center my-5 mx-3" id="users-wishlist-container" hidden>
     {% if user_wishlist|length == 0 %}
-    <div class="col-12">
-      <p>
-        You have not added any discs to your wishlist yet! Head over to 
-        <span><a href="/discs/discover/page/1">discover</a></span> 
-        to search for discs you eventually want to add to your quiver. 
-        You can also use the searchbar up top to search for discs by name.
-      </p>
+    <div class="col-6">
+      <div class="alert alert-warning m-auto">
+          <h4>Looks like you haven't added any discs to your wishlist!</h4>
+          <p>
+            To get started, head over to 
+            <span><a href="/discs/discover/page/1">discover</a></span> 
+            to search for discs you eventually want to add to your quiver. 
+            You can also use the searchbar up top to search for discs by name.
+          </p>
+      </div>
     </div>
     {% else %}
     {% for d in user_wishlist %}
-    <div class="col-3">
-        <div class="card" style="width: 20rem; margin: 2% auto 2% auto;" id="{{d.id}}-card">
-            <img class="card-img-top" src="{{d.image_url}}" alt="{{d.name}} image">
-            <div class="card-body">
-                <h4 class="card-title"><a href="/discs/{{d.id}}">{{d.name.capitalize()}}</a></h4>
-                <h5 class="">{{d.manufacturers_name.capitalize()}}</h5>
+    <div class="col-3 m-3" id="{{d.id}}-card">
+      <div class="card border-secondary" >
+          <div class="row">
+            <div class="col-5 ml-3">
+              <img class="card-img-top disc-img" src="{{d.image_url}}" alt="{{d.name}} image">
+              <h4 class="card-title"><a href="/discs/{{d.id}}">{{d.name.capitalize()}}</a></h4>
+              <h5 class="">{{d.manufacturers_name.capitalize()}}</h5>
+            </div>
+            <div class="col">
+              <div class="card-body">
                 <ul class="list-group list-group-flush">
-                <li class="list-group-item text-primary">Plastic: <span class="text-danger">{{d.plastic}}</span></li>
-                <li class="list-group-item text-primary">Disc Type: <span class="text-danger">{{d.disc_type}}</span></li>
-                <li class="list-group-item text-primary">Difficulty: <span class="text-danger">{{d.difficulty}}</span></li>
-                <li class="list-group-item text-primary">Speed: <span class="text-danger">{{d.speed}}</span></li>
-                <li class="list-group-item text-primary">Glide: <span class="text-danger">{{d.glide}}</span></li>
-                <li class="list-group-item text-primary">Low Stability: <span class="text-danger">{{d.low_stability}}</span></li>
-                <li class="list-group-item text-primary">High Stability: <span class="text-danger">{{d.high_stability}}</span></li>
+                  <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Plastic: <span class="text-info">{{d.plastic.capitalize()}}</span></li>
+                  <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Disc Type: <span class="text-info">{{d.disc_type.capitalize()}}</span></li>
+                  <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Difficulty: <span class="badge badge-primary">{{d.difficulty}}</span></li>
+                  <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Speed: <span class="badge badge-primary">{{d.speed}}</span></li>
+                  <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Glide: <span class="badge badge-primary">{{d.glide}}</span></li>
+                  <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Low Stability: <span class="badge badge-primary">{{d.low_stability}}</span></li>
+                  <li class="list-group-item text-primary d-flex justify-content-between align-items-center">High Stability: <span class="badge badge-primary">{{d.high_stability}}</span></li>
                 </ul>
-                
-                <button data-id="{{d.id}}" data-button-type="wishlist-add-to-bag" class="btn btn-primary">Add to Bag</button>
+              </div>
+            </div>
+          </div>
+                <div class="row">
+                  <div class="col-12">
+                    <button data-id="{{d.id}}" data-button-type="wishlist-add-to-bag" class="btn btn-primary w-100">Add to Bag</button>
+                  </div>
+                </div>
             </div>
         </div>
-    </div>
     {% endfor %}
     {% endif %}
 </div>
-<div class="container mt-5 mb-5">
+<div class="container my-5">
     <div class="row">
+      <div class="col-12">
         <div class="col-12"><h3>Bag Breakdown</h3></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <hr class="border-primary">
+      </div>
+    </div>
+    <div class="row">
         {% for disc_type, avgs in bag_stats.items() %}
         <div class="col-3">
-            <h5>{{disc_type.capitalize()}}</h5>
-            <ul class="list-group list-group-numbered">
-              <li class="list-group-item d-flex justify-content-between align-items-start">
-                <div class="ms-2 me-auto">
-                  <div class="fw-bold text-dark">Total</div>
-                </div>
-                <span class="badge bg-primary rounded-pill">{{avgs['total']}}</span>
-              </li>
-                <li class="list-group-item d-flex justify-content-between align-items-start">
+            <div>
+              <ul class="list-group list-group-numbered">
+                <li class="list-group-item d-flex justify-content-between align-items-start bg-grey">
                   <div class="ms-2 me-auto">
-                    <div class="fw-bold text-dark">Average Speed</div>
+                    <div class="fw-bold text-light"><h5>{{disc_type.capitalize()}}</h5></div>
                   </div>
-                  <span class="badge bg-primary rounded-pill">{{avgs['speed']}}</span>
                 </li>
-                <li class="list-group-item d-flex justify-content-between align-items-start">
+                <li class="list-group-item d-flex justify-content-between align-items-start bg-primary">
                   <div class="ms-2 me-auto">
-                    <div class="fw-bold text-dark">Average Glide</div>
+                    <div class="fw-bold text-light">Total</div>
                   </div>
-                  <span class="badge bg-primary rounded-pill">{{avgs['glide']}}</span>
+                  <span class="badge bg-warning text-dark">{{avgs['total']}}</span>
                 </li>
-                <li class="list-group-item d-flex justify-content-between align-items-start">
-                  <div class="ms-2 me-auto">
-                    <div class="fw-bold text-dark">Average Low Stability</div>
-                  </div>
-                  <span class="badge bg-primary rounded-pill">{{avgs['l_stability']}}</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-start">
-                  <div class="ms-2 me-auto">
-                    <div class="fw-bold text-dark">Average High Stability</div>
-                  </div>
-                  <span class="badge bg-primary rounded-pill">{{avgs['h_stability']}}</span>
-                </li>
-            </ul>
+                  <li class="list-group-item d-flex justify-content-between align-items-start bg-primary">
+                    <div class="ms-2 me-auto">
+                      <div class="fw-bold text-light">Average Speed</div>
+                    </div>
+                    <span class="badge bg-warning text-dark">{{avgs['speed']}}</span>
+                  </li>
+                  <li class="list-group-item d-flex justify-content-between align-items-start bg-primary">
+                    <div class="ms-2 me-auto">
+                      <div class="fw-bold text-light">Average Glide</div>
+                    </div>
+                    <span class="badge bg-warning text-dark">{{avgs['glide']}}</span>
+                  </li>
+                  <li class="list-group-item d-flex justify-content-between align-items-start bg-primary">
+                    <div class="ms-2 me-auto">
+                      <div class="fw-bold text-light">Average Low Stability</div>
+                    </div>
+                    <span class="badge bg-warning text-dark">{{avgs['l_stability']}}</span>
+                  </li>
+                  <li class="list-group-item d-flex justify-content-between align-items-start bg-primary">
+                    <div class="ms-2 me-auto">
+                      <div class="fw-bold text-light">Average High Stability</div>
+                    </div>
+                    <span class="badge bg-warning text-dark">{{avgs['h_stability']}}</span>
+                  </li>
+              </ul>
+            </div>
         </div>
         {% endfor %}
-        <div class="col"></div>
     </div>
 </div>
 

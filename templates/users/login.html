@@ -1,7 +1,22 @@
 {% extends 'base.html' %}
 {% block content %}
     <div class="container">
-        {% include 'users/form.html' %}
-        <a href="/users/forgot-password">Forgot Password?</a>
+        <div class="row">
+            <div class="col-12 my-3">
+                <h2 class="display-4">Log In</h2>
+            </div>
+            <div class="col-12">
+                {% include 'users/form.html' %}
+                
+            </div>
+            <div class="row w-100 mx-2 my-3 ">
+                <div class="col-2">
+                    <a href="/users/forgot-password">Forgot Password?</a>
+                </div>
+                <div class="col">
+                    <a href="/users/forgot-username">Forgot Username?</a>
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock %}

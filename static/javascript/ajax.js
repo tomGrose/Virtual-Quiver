@@ -31,6 +31,13 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 handleDiscAdd(discId);
             }
         })
+        wishContainer.addEventListener('click', (evt) => {
+            if (evt.target.getAttribute('data-button-type') === "wishlist-remove"){
+                const discId = evt.target.getAttribute('data-id');
+                removeDiscCard(evt.target);
+                handleRemoveFromWishlist(discId);
+            }
+        })
     } catch(ex){}
     
 });

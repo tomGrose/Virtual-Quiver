@@ -2,6 +2,16 @@
 {% block content %}
     
 <div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="card-title display-4">{{disc.name.capitalize()}}</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <hr class="border-primary">
+        </div>
+    </div>
     <div class="row" id="discs-display-container">
         <div class="col-4">
             <img class="card-img-top" src="{{disc.image_url}}" alt="{{disc.name}} image">
@@ -9,51 +19,67 @@
         <div class="col-8">
             <div class="card" id="{{disc.id}}-card">
                 <div class="card-body">
-                    <h4 class="card-title">{{disc.name.capitalize()}}</h4>
-                    <h5 class="">{{disc.manufacturers_name.capitalize()}}</h5>
-                    <ul class="list-group list-group-flush">
-                    <li class="list-group-item text-primary">Plastic: <span class="text-danger">{{disc.plastic}}</span></li>
-                    <li class="list-group-item text-primary">Disc Type: <span class="text-danger">{{disc.disc_type}}</span></li>
-                    <li class="list-group-item text-primary">Difficulty: <span class="text-danger">{{disc.difficulty}}</span></li>
-                    <li class="list-group-item text-primary">Speed: <span class="text-danger">{{disc.speed}}</span></li>
-                    <li class="list-group-item text-primary">Glide: <span class="text-danger">{{disc.glide}}</span></li>
-                    <li class="list-group-item text-primary">Low Stability: <span class="text-danger">{{disc.low_stability}}</span></li>
-                    <li class="list-group-item text-primary">High Stability: <span class="text-danger">{{disc.high_stability}}</span></li>
-                    </ul>
+                    <div class="row">
+                        <div class="col-4">
+                            
+                            <h5 class="d-flex justify-content-around align-items-center">Company: <span class="text-info">{{disc.manufacturers_name.capitalize()}}</span></h5>
+                        </div>
+                        <div class="col-4">
+                            <h5 class="d-flex justify-content-around align-items-center">Plastic: <span class="text-info">{{disc.plastic.capitalize()}}</span></h5>
+                        </div>
+                        <div class="col-4">
+                            <h5 class="d-flex justify-content-around align-items-center">Disc Type: <span class="text-info">{{disc.disc_type.capitalize()}}</span></h5>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <hr class="border-primary mx-3">
+                        </div>
+                    </div>
+                   <div class="row my-3">
+                       <div class="col-4">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Difficulty: <span class="badge badge-primary">{{disc.difficulty}}</span></li>
+                                <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Speed: <span class="badge badge-primary">{{disc.speed}}</span></li>
+                                <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Glide: <span class="badge badge-primary">{{disc.glide}}</span></li>
+                                <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Low Stability: <span class="badge badge-primary">{{disc.low_stability}}</span></li>
+                                <li class="list-group-item text-primary d-flex justify-content-between align-items-center">High Stability: <span class="badge badge-primary">{{disc.high_stability}}</span></li>
+                            </ul>
+                       </div>
+                       <div class="col-8">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Amount of people with this disc in their quiver: <span class="badge badge-primary">{{disc_count}}</span></li>
+                                <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Amount of people with this disc in their wishlist: <span class="badge badge-primary">{{wish_count}}</span></li>
+                            </ul>
+                       </div>
+                   </div>
                     {% if current_user.is_authenticated %}
-                        {% if d in current_user.discs %}
+                        {% if disc in users_discs %}
                             <div class="btn btn-success">Disc already in your quiver!</div>
-                        {% elif d not in current_user.discs and d in current_user.wish_discs %}
+                        {% elif disc not in current_user.discs and disc in users_wish_discs %}
                             <button data-id="{{disc.id}}" data-button-type="add-to-bag" class="btn btn-primary">Add to Bag</button>
                             <div class="btn btn-success">Disc in your wishlist!</div>
                         {% else %}
                             <button data-id="{{disc.id}}" data-button-type="add-to-bag" class="btn btn-primary">Add to Bag</button>
-                            <button data-id="{{disc.id}}" data-button-type="add-to-wishlist" class="btn btn-success">Wishlist</button>
-                            <button data-id="{{disc.id}}" data-button-type="add-review" class="btn btn-info">Add Review</button>
+                            <button data-id="{{disc.id}}" data-button-type="add-to-wishlist" id="wish-{{disc.id}}" class="btn btn-success">Wishlist</button>
                         {% endif %}
                     {% endif %}
                 </div>
             </div>
         </div>
     </div>
-    <div class="container">
-        <div class="row">
-            <div class="col-6">Amount of people with this disc in their quiver: {{disc_count}}</div>
-            <div class="col-6">Amount of people with this disc in their wishlist: {{wish_count}}</div>
-        </div>
-    </div>
-    <div class="container">
+    <div class="container my-5">
         <h2>Reviews</h2>
         <div id="accordion" class="row">
-            <div class="card col-12">
-                <div class="card-header" id="headingOne">
+            <div class="card col-12 p-0">
+                <div class="card-header w-100 text-light bg-grey" id="headingOne">
                     <h5 class="mb-0">
-                        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        <button class="btn btn-link text-light" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
                             Reviews
                         </button>
                     </h5>
                 </div>
-                <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+                <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
                     <div class="card-body">
                         {% if reviews|length == 0 %}
                             <p>Looks like there are no reviews yet!</p>
@@ -75,10 +101,10 @@
                     </div>
                 </div>
             </div>
-            <div class="card col-12">
-                <div class="card-header" id="headingTwo">
+            <div class="card col-12 p-0">
+                <div class="card-header w-100 bg-primary" id="headingTwo">
                     <h5 class="mb-0">
-                        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        <button class="btn btn-link collapsed text-light" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
                             Broken in Reviews
                         </button>
                     </h5>
@@ -104,15 +130,15 @@
                     </div>
                 </div>
             </div>
-            <div class="card col-12">
-                <div class="card-header" id="headingThree">
+            <div class="card col-12 p-0">
+                <div class="card-header w-100 bg-grey" id="headingThree">
                     <h5 class="mb-0">
-                        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                        <button class="btn btn-link collapsed text-light" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
                             Review Disc
                         </button>
                     </h5>
                 </div>
-                <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+                <div id="collapseThree" class="collapse show" aria-labelledby="headingThree" data-parent="#accordion">
                     <div class="card-body">
                         {% if current_user.is_authenticated %}
                             {% include 'users/form.html' %}

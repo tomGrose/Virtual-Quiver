@@ -1,24 +1,52 @@
 {% extends 'base.html' %}
 {% block content %}
-    <h3>Showing recommendations for discs based off of:</h3>
-    <div class="card" style="width: 18rem;">
-        <img class="card-img-top" src="{{disc.image_url}}" alt="{{disc.name}} image">
-        <div class="card-body">
-            <h4 class="card-title"><a href="/discs/{{disc.id}}">{{disc.name.capitalize()}}</a></h4>
-            <h5 class="">{{disc.manufacturers_name.capitalize()}}</h5>
-            <ul class="list-group list-group-flush">
-            <li class="list-group-item text-primary">Plastic: <span class="text-danger">{{disc.plastic}}</span></li>
-            <li class="list-group-item text-primary">Disc Type: <span class="text-danger">{{disc.disc_type}}</span></li>
-            <li class="list-group-item text-primary">Difficulty: <span class="text-danger">{{disc.difficulty}}</span></li>
-            <li class="list-group-item text-primary">Speed: <span class="text-danger">{{disc.speed}}</span></li>
-            <li class="list-group-item text-primary">Glide: <span class="text-danger">{{disc.glide}}</span></li>
-            <li class="list-group-item text-primary">Low Stability: <span class="text-danger">{{disc.low_stability}}</span></li>
-            <li class="list-group-item text-primary">High Stability: <span class="text-danger">{{disc.high_stability}}</span></li>
-            </ul>
+    
+    <div class="container">
+        
+        <div class="row">
+            <div class="col-12 text-center">
+                <h3>Disc recommendations based on {{disc.name.capitalize()}}</h3>
+            </div>
+            <div class="col-10 m-auto">
+                <div class="card pl-3">
+                    <div class="row">
+                      <div class="col-5">
+                        <img class="card-img-top disc-img" src="{{disc.image_url}}" alt="{{disc.name}} image">
+                        <h4 class="card-title"><a href="/discs/{{disc.id}}">{{disc.name.capitalize()}}</a></h4>
+                        <h5 class="">{{disc.manufacturers_name.capitalize()}}</h5>
+                      </div>
+                      <div class="col-7">
+                        <div class="card-body">
+                          <ul class="list-group list-group-flush">
+                            <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Plastic: <span class="text-info">{{disc.plastic.capitalize()}}</span></li>
+                            <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Disc Type: <span class="text-info">{{disc.disc_type.capitalize()}}</span></li>
+                            <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Difficulty: <span class="badge badge-primary badge-pill">{{disc.difficulty}}</span></li>
+                            <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Speed: <span class="badge badge-primary badge-pill">{{disc.speed}}</span></li>
+                            <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Glide: <span class="badge badge-primary badge-pill">{{disc.glide}}</span></li>
+                            <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Low Stability: <span class="badge badge-primary badge-pill">{{disc.low_stability}}</span></li>
+                            <li class="list-group-item text-primary d-flex justify-content-between align-items-center">High Stability: <span class="badge badge-primary badge-pill">{{disc.high_stability}}</span></li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    {% include 'users/form.html' %}
-    {% include 'discs/discs-display.html' %}
-    {% include 'discs/discs-paginate.html' %}
+    <hr>
+    <div class="row">
+        <div class="col-2 bg-secondary text-light h-25 my-4">
+            <p class="lead m-3">
+                Use the box below to choose a disc from your quiver to see recommendations based on that disc.
+            </p>
+            <div class="m-3">
+                {% include 'users/form.html' %}
+            </div>
+        </div>
+        <div class="col-10 my-4 w-100">
+            {% include 'discs/discs-display.html' %}
+            {% include 'discs/discs-paginate.html' %}
+        </div>
+    </div>
     
 {% endblock %}

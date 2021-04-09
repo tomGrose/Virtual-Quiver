@@ -9,6 +9,8 @@ from furl import furl
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app as app
 
+
+
 bcrypt = Bcrypt()
 db = SQLAlchemy()
 
@@ -16,13 +18,7 @@ def connect_db(app):
     db.app = app
     db.init_app(app)
 
-
-class User(UserMixin, db.Model):
-    """User model for Virtual Quiver"""
-
-    __tablename__ = 'users'
-
-    TYPES = [
+US_STATES = [
     (u'alabama', u'AL'),
     (u'alaska', u'AK'),
     (u'arizona', u'AZ'),
@@ -75,6 +71,14 @@ class User(UserMixin, db.Model):
     (u'wyoming', u'WY')
     ]
 
+
+class User(UserMixin, db.Model):
+    """User model for Virtual Quiver"""
+
+    __tablename__ = 'users'
+
+    TYPES = US_STATES
+    
     id = db.Column(
         db.Integer,
         primary_key=True,
@@ -117,11 +121,13 @@ class User(UserMixin, db.Model):
     )
 
     location = db.Column(
-        ChoiceType(TYPES)
+        ChoiceType(TYPES),
+        info={'label': 'Location'}
     )
 
     password = db.Column(
         db.String,
+        info={'label': 'Password'},
         nullable=False,
     )
 
@@ -215,6 +221,7 @@ class User(UserMixin, db.Model):
 
         return False
 
+
 class Manufacturer(db.Model):
     """Model for a manufacturer of discs"""
 
@@ -230,6 +237,7 @@ class Manufacturer(db.Model):
         nullable=False,
         unique=True,
     )
+
 
 class Disc(db.Model):
     """Model for a disc golf disc"""
@@ -339,6 +347,7 @@ class User_Disc(db.Model):
         server_default=func.now()
     )
 
+
 class User_Broken_In_Disc(db.Model):
     """ Table Containing relationship from a user to discs 
     if they have been in the users bag for over four months """
@@ -359,6 +368,7 @@ class User_Broken_In_Disc(db.Model):
         db.Integer,
         db.ForeignKey('discs.id', ondelete="cascade")
     )
+
 
 class Disc_Review(db.Model):
     """Abstract table for regular reviews and broken in reviews to inherit from """
@@ -403,6 +413,7 @@ class Disc_Review(db.Model):
         nullable=False
     )
 
+
 class Review(Disc_Review):
     """ Model for holding the reviews users have left for discs """
     
@@ -412,6 +423,7 @@ class Review(Disc_Review):
         db.Integer,
         primary_key=True,
     )
+
 
 class Broken_In_Review(Disc_Review):
     """ Model for holding the reviews a user can leave after owning a disc for four months """
@@ -423,6 +435,7 @@ class Broken_In_Review(Disc_Review):
         primary_key=True,
     )
 
+
 class Rec_Disc(Disc, db.Model):
     """ Abstract model for a disc based on its reccomendation """
 
@@ -430,3 +443,22 @@ class Rec_Disc(Disc, db.Model):
 
     id = db.Column(db.Integer)
     disc_rec_based_on = db.Column(db.Text)
+
+
+class Innapropriate_Word(db.Model):
+    """ Table Containing words that won't be allowed to be used in a user's review of discs,
+    or in their username """
+
+    __tablename__ = 'innapropriate_words'
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+
+    word = db.Column(
+        db.Text
+    )
+
+    def __repr__(self):
+        return f"<ID: {self.id} Word: {self.word}>"

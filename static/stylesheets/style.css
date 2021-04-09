@@ -1,11 +1,114 @@
 #nav-logo {
-    width: 50px;
+    width: 100px;
+    display: block;
+    margin: auto;
+}
+#footer-logo {
+    width: 75px;
+    display: block;
+}
+#recommendations-header {
+    background-image: url('/static/images/recommendations.jpg');
+    
+}
+#wishlist-header {
+    background-image: url('/static/images/wishlist.jpg');
+    
 }
 
-#landing-greeter {
+#discover-header {
+    background-image: url('/static/images/discover.jpg');
+}
+
+#landing-greeter-logged-out {
+    min-height: 800px;
+}
+
+#landing-greeter-logged-in {
+    background-image: url('/static/images/disc-basket.jpg');
+    
+}
+
+#greeter-text {
+    height: 50%;
+    border-radius: 10px;
+    padding: 5%;
+}
+
+.jumbo-header {
+    min-height: 300px;
+    background-attachment: fixed;
+    background-position: center bottom;
+}
+
+.bg-purple-transparent {
+    background-color:rgba(153,63,191,0.75)
+}
+
+.landing-greeter {
     background-image: url('/static/images/header.jpg');
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    min-height: 800px;
+    
+}
+
+.disc-img {
+    display: block;
+    max-width: 250px;
+    margin: auto;
+}
+
+.profile-img {
+    display: block;
+    max-width: 400px;
+    margin: auto;
+    border-radius: 10px;
+}
+
+.bg-off-white {
+    background-color: #f2f2f2;
+}
+
+.pagination-page-info {
+    padding: .6em;
+    padding-left: 0;
+    width: 40em;
+    margin: .5em;
+    margin-left: 0;
+    font-size: 12px;
+}
+.pagination-page-info b {
+    color: black;
+    background: #6aa6ed;
+    padding-left: 2px;
+    padding: .1em .25em;
+    font-size: 150%;
+}
+
+.info-img {
+    background-image: url('/static/images/about-first.jpeg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    min-height: 300px;
+}
+
+.icon-img {
+    display: block;
+    max-width: 175px;
+    width: 100%;
+}
+
+.icon-container {
+    min-height: 200px;
+    height: 1000%;
+}
+
+.bg-grey {
+    background-color: #474747;
+}
+
+.bg-light-grey {
+    background-color: #919191;
 }

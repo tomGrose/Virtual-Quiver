@@ -21,36 +21,58 @@
   
 </head>
 
-<body class="{% block body_class %}{% endblock %}">
-<nav class="navbar navbar-expand">
+<body class="{% block body_class %}{% endblock %} bg-off-white">
+  <div class="container-fluid bg-grey">
+    <div class="row">
+      <hr>
+    </div>
+  </div>
+  <div class="container-fluid bg-off-white">
+    <div class="row d-flex justify-content-center">
+      <div class="col-7">
+        <div class="row">
+          <div class="col-4 text-center d-flex align-items-center mr-0">
+            <h3 class="display-4">Virtual Quiver</h3>
+          </div>
+          <div class="col-2 ml-0 d-flex justify-content-start">
+            <div class="navbar-header">
+              <a href="/" class="navbar-brand">
+                <img src="/static/images/logo.png" alt="Virtual Quiver logo" id="nav-logo">
+              </a>
+            </div>
+          </div>
+          <div class="col-6 d-flex align-items-center">
+              <form class="navbar-form w-100" action="/discs/search" method="GET">
+                  <div class="input-group">
+                      <input name="disc_name" class="form-control" placeholder="Search Discs" id="search">
+                      <div class="input-group-append">
+                          <button class="btn btn-default">
+                              <span class="fa fa-search"></span>
+                          </button>
+                      </div>
+                  </div>
+              </form>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+<nav class="navbar navbar-expand navbar-dark bg-grey">
   <div class="container-fluid">
-    <div class="navbar-header">
-      <a href="/" class="navbar-brand">
-        <img src="/static/images/temp-logo.png" alt="Virtual Quiver logo" id="nav-logo">
-        <span>Virtual Quiver</span>
-      </a>
+    <div>
+
     </div>
     <ul class="nav navbar-nav navbar-right">
-      <li>
-        <form class="navbar-form navbar-right" action="/discs/search" method="GET">
-            <div class="input-group">
-                <input name="disc_name" class="form-control" placeholder="Search Discs" id="search">
-                <div class="input-group-append">
-                    <button class="btn btn-default">
-                        <span class="fa fa-search"></span>
-                    </button>
-                </div>
-            </div>
-        </form>
-      </li>
+     
       {% if not current_user.is_authenticated %}
       <li class="nav-item"><a class="nav-link" href="/signup">Sign up</a></li>
       <li class="nav-item"><a class="nav-link" href="/login">Log in</a></li>
       {% else %}
-      
+      <li class="nav-item"><a class="nav-link" href="/">My Quiver</a></li>
+      <li class="nav-item"><a class="nav-link" href="/discs/wishlist">My Wishlist</a></li>
       <li class="nav-item"><a class="nav-link" href="/discs/discover/page/1">Discover Discs</a></li>
       <li class="nav-item"><a class="nav-link" href="/discs/recommendations">Recommendations</a></li>
-      <li class="nav-item"><a class="nav-link" href="/discs/wishlist">Wishlist</a></li>
       <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
       <li class="nav-item"><a class="nav-link" href="/users/profile/{{current_user.id}}">My Profile</a></li>
       <li class="nav-item"><a class="nav-link" href="/logout">Log out</a></li>
@@ -59,16 +81,35 @@
     </ul>
   </div>
 </nav>
-<div class="container">
+<div class="container-fluid">
     {% for category, message in get_flashed_messages(with_categories=True) %}
-    <div class="alert alert-{{ category }}">{{ message }}</div>
+    <div class="alert alert-{{ category }} w-100 text-center">{{ message }}</div>
     {% endfor %}
   
 </div>
-{% block content %}
-{% endblock %}
+<div class="container-fluid min-vh-100">
+  {% block content %}
+
+  {% endblock %}
+</div>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="/static/javascript/ui.js"></script>
 <script src="/static/javascript/ajax.js"></script>
 </body>
+<footer>
+  <div class="container-fluid bg-grey pt-2">
+    <div class="row d-flex justify-content-center">
+     
+      <div class="col-6 d-flex align-items-center justify-content-center">
+        <h4 class="text-light mr-4">Virtual Quiver</h4>
+        <img src="/static/images/logo.png" alt="Virtual Quiver logo" id="footer-logo">
+      </div>
+    </div>
+    <div class="row d-flex justify-content-center">
+      <div class="col-4 text-center">
+        <p class="text-light">This website is for educational purposes only</p>
+      </div>
+    </div>
+  </div>
+</footer>
 </html>

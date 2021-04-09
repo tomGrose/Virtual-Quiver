@@ -1,7 +1,10 @@
 // Change the button's text when a user already has this disc in their bag or their wishlist
 function buttonChange(button) {
     if (button.getAttribute('data-button-type') === "add-to-bag"){
+        const buttonId = button.getAttribute('data-id')
+        const wishButton = document.querySelector(`#wish-${buttonId}`)
         button.innerHTML = "Added to quiver";
+        wishButton.remove();
     }
     else if (button.getAttribute('data-button-type') === "add-to-wishlist"){
         button.innerHTML = "Added to wishlist";
@@ -31,7 +34,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     try{
         document.querySelector('#home-view-select').addEventListener("change", (evt) => {
-            console.log('HIHIHIHIHIHIHIHIH')
             handleHomeView();
         }) 
     } catch(ex) {}
@@ -56,7 +58,7 @@ function handleSearchValues(){
     outputs.forEach((val, indx) => {
         val.value = inputs[indx].value
     })
-  }
+}
 
 
 // Show the delete form to a user when they click delete account

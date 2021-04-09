@@ -1,35 +1,76 @@
 {% extends 'base.html' %}
 {% block content %}
+<div class="container-fluid jumbo-header landing-greeter" id="wishlist-header" >
     
-<div class="container">
+</div>
+<div class="container-fluid bg-primary">
+    <div class="row">
+      <div class="col-12">
+        <hr class="border-primary">
+      </div>
+    </div>
+</div>
+<div class="container-fluid my-3">
+    <div class="row d-flex justify-content-center">
+        <div class="col-4 text-center">
+            <h2 class="display-4">Wishlist</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-5 m-auto">
+            <p class="lead">
+                This is your wishlist. You can use it to store discs to remember them for a later date when you may end up wanting to purchase them.
+                When you add a disc to your quiver it will automatically remove itself from your wishlist. 
+            </p>
+        </div>
+    </div>
+    <hr class="border-primary mx-5">
+</div>
+<div class="container-fluid my-5">
     <div class="row" id="users-wishlist-container">
     {% if discs|length == 0 %}
-    <div class="col-12">
-        <p>
-            You have not added any discs to your wishlist yet! Head over to 
-            <span><a href="/discs/discover/page/1">discover</a></span> 
-            to search for discs you eventually want to add to your quiver. 
-            You can also use the searchbar up top to search for discs by name.
-        </p>
+    <div class="row w-100">
+        <div class="col-6 m-auto">
+            <div class="alert alert-warning">
+                <h4>Looks like you haven't added any discs to your wishlist!</h4>
+                <p>
+                To get started, head over to 
+                <span><a href="/discs/discover/page/1">discover</a></span> 
+                to search for discs you eventually want to add to your quiver. 
+                You can also use the searchbar up top to search for discs by name.
+                </p>
+            </div>
+        </div>
     </div>
+        
     {% else %}
         {% for d in discs %}
-        <div class="col-4">
-            <div class="card" style="width: 18rem;" id="{{d.id}}-card">
-                <img class="card-img-top" src="{{d.image_url}}" alt="{{d.name}} image">
+        <div class="col-3" id="{{d.id}}-card">
+            <div class="card" >
+                <img class="card-img-top disc-img" src="{{d.image_url}}" alt="{{d.name}} image">
                 <div class="card-body">
                     <h4 class="card-title"><a href="/discs/{{d.id}}">{{d.name.capitalize()}}</a></h4>
                     <h5 class="">{{d.manufacturers_name.capitalize()}}</h5>
                     <ul class="list-group list-group-flush">
-                    <li class="list-group-item text-primary">Plastic: <span class="text-danger">{{d.plastic}}</span></li>
-                    <li class="list-group-item text-primary">Disc Type: <span class="text-danger">{{d.disc_type}}</span></li>
-                    <li class="list-group-item text-primary">Difficulty: <span class="text-danger">{{d.difficulty}}</span></li>
-                    <li class="list-group-item text-primary">Speed: <span class="text-danger">{{d.speed}}</span></li>
-                    <li class="list-group-item text-primary">Glide: <span class="text-danger">{{d.glide}}</span></li>
-                    <li class="list-group-item text-primary">Low Stability: <span class="text-danger">{{d.low_stability}}</span></li>
-                    <li class="list-group-item text-primary">High Stability: <span class="text-danger">{{d.high_stability}}</span></li>
+                    <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Plastic: <span class="text-info">{{d.plastic.capitalize()}}</span></li>
+                    <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Disc Type: <span class="text-info">{{d.disc_type.capitalize()}}</span></li>
+                    <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Difficulty: <span class="badge badge-primary badge-pill">{{d.difficulty}}</span></li>
+                    <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Speed: <span class="badge badge-primary badge-pill">{{d.speed}}</span></li>
+                    <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Glide: <span class="badge badge-primary badge-pill">{{d.glide}}</span></li>
+                    <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Low Stability: <span class="badge badge-primary badge-pill">{{d.low_stability}}</span></li>
+                    <li class="list-group-item text-primary d-flex justify-content-between align-items-center">High Stability: <span class="badge badge-primary badge-pill">{{d.high_stability}}</span></li>
                     </ul>
-                    <button data-id="{{d.id}}" data-button-type="wishlist-add-to-bag" class="btn btn-primary">Add to Bag</button>
+                    <div class="row">
+                        <div class="col-12">
+                            <button data-id="{{d.id}}" data-button-type="wishlist-add-to-bag" class="btn btn-primary w-100">Add to Bag</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <button data-id="{{d.id}}" data-button-type="wishlist-remove" class="btn btn-warning w-100">Remove</button>
+                        </div>
+                    </div>
+                    
                 </div>
             </div>
         </div>

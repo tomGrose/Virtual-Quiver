@@ -1,6 +1,15 @@
 {% extends 'base.html' %}
 {% block content %}
-    <div class="container">
-        {% include 'users/form.html' %}
+    <div class="container-flex my-3">
+        <div class="row">
+            <div class="col-6 m-auto">
+                <h2 class="display-4">Sign Up</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6 m-auto">
+                {% include 'users/form.html' %}
+            </div>
+        </div>
     </div>
 {% endblock %}

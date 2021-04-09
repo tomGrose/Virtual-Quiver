@@ -1,32 +1,62 @@
 {% extends 'base.html' %}
 {% block content %}
-    <div class="container mb-5">
-        <div class="card" style="width: 50%;" id="user-profile-card">
-            <img class="card-img-top" src="{{user.image_url}}" alt="{{current_user.username}}'s profile image">
-            <div class="card-body">
-                <h4 class="card-title">{{user.username}}'s Settings</h4>
-                <ul class="list-group list-group-flush">
-                <li class="list-group-item text-primary">First Name: <span class="text-danger">{{user.first_name}}</span> <span class="edit-pen"><a href="/users/edit/{{current_user.id}}"><i class="fas fa-pen"></i></a></span></li>
-                <li class="list-group-item text-primary">Last Name: <span class="text-danger">{{user.last_name}}</span> <span class="edit-pen"><a href="/users/edit/{{current_user.id}}"><i class="fas fa-pen"></i></a></span></li>
-                <li class="list-group-item text-primary">Location: <span class="text-danger">{{user.location}}</span> <span class="edit-pen"><a href="/users/edit/{{current_user.id}}"><i class="fas fa-pen"></i></a></span></li>
-                <li class="list-group-item text-primary">Email: <span class="text-danger">{{user.email}}</span> <span class="edit-pen"><a href="/users/edit/{{current_user.id}}"><i class="fas fa-pen"></i></a></li>
-                <li class="list-group-item text-primary">Username: <span class="text-danger">{{user.username}}</span class="edit-pen"> <span><a href="/users/edit/{{current_user.id}}"><i class="fas fa-pen"></i></a></span></li>
-                </ul>
-                <a href="/users/password-change/{{user.id}}" class="btn btn-info">Change Password</a>
-                <button class="btn btn-danger" id="account-delete-btn">Delete Account</button>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-6">
+                <h2 class="display-4 mx-3">Profile Settings</h2>
             </div>
-            <form method="POST" action="/users/delete" id='account-delete-form' hidden>
-                {{ form.hidden_tag() }}
-                {% for field in form if field.widget.input_type != 'hidden' %}
-                    {% for error in field.errors %}
-                        <span class="text-danger">{{ error }}</span>
-                    {% endfor %}
-                        <h5>Are You sure you want to delete your account?</h5>
-                        {{ field(placeholder=field.label.text, class="form-control") }}
-                {% endfor %}
-                <button type="submit" class="btn btn-danger">Delete Account</button>
-                <button class="btn btn-primary" id="cancel-delete-btn">Cancel</button>
-            </form>
+            <div class="col-12">
+                <hr class="border-primary mx-3">
+            </div>
+        </div>
+        <div class="card w-50 m-auto py-5" id="user-profile-card">
+            <div class="row">
+                <div class="col-7">
+                    <div class="m-auto">
+                        <img class="card-img-top profile-img" src="{{user.image_url}}" alt="{{current_user.username}}'s profile image">
+                    </div>
+                </div>
+                <div class="col-5">
+                    <div class="card-body">
+                        <h4 class="card-title">{{user.username}}'s Settings</h4>
+                        <ul class="list-group list-group-flush my-4">
+                        <li class="list-group-item text-primary d-flex justify-content-between align-items-center">First Name:   {{user.first_name}} <span class="edit-pen"><a href="/users/edit/{{current_user.id}}"><i class="fas fa-pen"></i></a></span></li>
+                        <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Last Name:   {{user.last_name}} <span class="edit-pen"><a href="/users/edit/{{current_user.id}}"><i class="fas fa-pen"></i></a></span></li>
+                        <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Location:   {{user.location}} <span class="edit-pen"><a href="/users/edit/{{current_user.id}}"><i class="fas fa-pen"></i></a></span></li>
+                        <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Email:   {{user.email}} <span class="edit-pen"><a href="/users/edit/{{current_user.id}}"><i class="fas fa-pen"></i></a></li>
+                        <li class="list-group-item text-primary d-flex justify-content-between align-items-center">Username:   {{user.username}} <span class="edit-pen"><a href="/users/edit/{{current_user.id}}"><i class="fas fa-pen"></i></a></span></li>
+                        </ul>
+                        <div class="row my-2">
+                            <div class="col-12">
+                                <a href="/users/password-change/{{user.id}}" class="btn btn-primary w-100">Change Password</a>
+                            </div>
+                        </div>
+                        <div class="row my-2">
+                            <div class="col-12">
+                                <button class="btn btn-warning w-100" id="account-delete-btn">Delete Account</button>
+                            </div>
+                        </div>
+                    </div>
+                    <form method="POST" action="/users/delete" class="m-2" id='account-delete-form' hidden>
+                        {{ form.hidden_tag() }}
+                        <div class="row">
+                            <div class="col-12">
+                                <h5>Are You sure you want to delete your account?</h5>
+                            </div>
+                            <div class="col-12">
+                                <span class="text-danger">{{ error }}</span>
+                            </div>
+                            <div class="col-12 d-flex justify-content-between align-items-center">
+                                <p>please chlick this checkbox then click "Delete Account if you are sure"</p>
+                                {{form.delete}}
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-danger">Delete Account</button>
+                        <button class="btn btn-primary" id="cancel-delete-btn">Cancel</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}

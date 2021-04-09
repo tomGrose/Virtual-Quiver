@@ -34,8 +34,6 @@ def generate_ran_recs(users_discs):
     else:
         return []
 
-
-
     
 def get_stats(users_discs):
     """Using numpi get the average stats of the discs in a users bag """
@@ -58,7 +56,7 @@ def get_stats(users_discs):
         if len(discs) == 0:
             continue
         else:
-            discs_avgs[disc_type]['total'] += 1
+            discs_avgs[disc_type]['total'] = len(discs_by_type[f'{disc_type}'])
             discs_avgs[disc_type]['speed'] = round(np.mean([d.speed for d in discs]), 1)
             discs_avgs[disc_type]['glide'] = round(np.mean([d.glide for d in discs]), 1)
             discs_avgs[disc_type]['l_stability'] = round(np.mean([d.low_stability for d in discs]), 1)
@@ -85,9 +83,10 @@ def populate_broken_in_discs(users_discs, users_broken_in_discs, current_user):
 
 
 def send_reset_email(mail, user):
+    """ Send an email to a user with a time sensitive password reset token """
     token = user.get_pw_change_token()
     msg = Message('Password Reset Request', 
-        sender='tomrosenbaugh@yahoo.com', 
+        sender='virtualquiverdiscs@gmail.com', 
         recipients=[user.email])
     
     msg.body = f'''To reset your password, please visit this link:
@@ -97,55 +96,27 @@ If you did not make this request please ignore this email and no changes will be
 '''
     mail.send(msg)
 
-# US_STATES = [
-#     (u'alabama', u'AL'),
-#     (u'alaska', u'AK'),
-#     (u'arizona', u'AZ'),
-#     (u'arkansas', u'AR'),
-#     (u'california', u'CA'),
-#     (u'colorado', u'CO'),
-#     (u'connecticut', u'CT'),
-#     (u'deleware', u'DE'),
-#     (u'florida', u'FL'),
-#     (u'georgia', u'GA'),
-#     (u'hawaii', u'HI'),
-#     (u'idaho', u'ID'),
-#     (u'illinois', u'IL'),
-#     (u'indiana', u'IN'),
-#     (u'iowa', u'IA'),
-#     (u'kansas', u'KS'),
-#     (u'kentucky', u'KY'),
-#     (u'louisiana', u'LA'),
-#     (u'maine', u'ME'),
-#     (u'maryland', u'MD'),
-#     (u'massachusetts', u'MA'),
-#     (u'michigan', u'MI'),
-#     (u'minnesota', u'MN'),
-#     (u'mississippi', u'MS'),
-#     (u'missouri', u'MO'),
-#     (u'montana', u'MT'),
-#     (u'nebraska', u'NE'),
-#     (u'nevada', u'NV'),
-#     (u'new hampshire', u'NH'),
-#     (u'new jersey', u'NJ'),
-#     (u'new mexico', u'NM'),
-#     (u'new york', u'NY'),
-#     (u'north carolina', u'NC'),
-#     (u'north dakota', u'ND'),
-#     (u'ohio', u'OH'),
-#     (u'oklahoma', u'OK'),
-#     (u'oregon', u'OR'),
-#     (u'pennsylvania', u'PA'),
-#     (u'rhode island', u'RI'),
-#     (u'south carolina', u'SC'),
-#     (u'south dakota', u'SD'),
-#     (u'tennessee', u'TN'),
-#     (u'texas', u'TX'),
-#     (u'utah', u'UT'),
-#     (u'vermont', u'VT'),
-#     (u'virginia', u'VA'),
-#     (u'washington', u'WA'),
-#     (u'west virginia', u'WV'),
-#     (u'wisconsin', u'WI'),
-#     (u'wyoming', u'WY')
-#     ]
+def send_username_reminder(mail, user):
+    """ Send a username reminder email to a user """
+
+    msg = Message('Username Request', 
+        sender='virtualquiverdiscs@gmail.com', 
+        recipients=[user.email])
+    
+    msg.body = f'''Hello {user.first_name.capitalize()},
+
+We have recieved a username reminder for the account associated with this email at virtualquiver.com.
+
+Your username is {user.username}
+
+If you did not make this request please ignore this email and no changes will be made to your account.
+'''
+    mail.send(msg)
+
+
+# def clean_wish_discs(user, users_discs, user_wish_discs):
+#     for d in user_wish_discs:
+#         if d in users_discs:
+#             wish_disc = User_Wishlist.query.filter_by(user_id = f'{user.id}', disc_id = f'{d.id}').first()
+#             db.session.delete(wish_disc)
+#             db.session.commit()

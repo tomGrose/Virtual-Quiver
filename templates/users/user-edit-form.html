@@ -1,6 +1,16 @@
 {% extends 'base.html' %}
 {% block content %}
     <div class="container">
-        {% include 'users/form.html' %}
+        <div class="row">
+            <div class="col-12 my-3">
+                <h2 class="display-4">Edit Your Profile Settings</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                {% include 'users/form.html' %}
+            </div>
+        </div>
+        
     </div>
 {% endblock %}

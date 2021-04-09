@@ -1,9 +1,63 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container-fluid" id="landing-greeter" >
-    <h2>Your Companion for Finding Your Next Favorite Disc</h2>
-    <p>Virtual Quiver allows you to save the dsics you already own to your virtual bag, 
-        and to be able to find new discs based off recomendations. Want to get Started?</p>
-    <a href="/signup" class="btn btn-primary">Sign Up</a>
+<div class="container-fluid d-flex justify-content-center align-items-center landing-greeter" id="landing-greeter-logged-out" >
+    <div class="text-center bg-purple-transparent text-light" id="greeter-text">
+        <h2>Your Companion for Finding Your Next Favorite Disc</h2>
+        <p class="m-3">Virtual Quiver allows you to save the dsics you already own to your virtual bag, 
+            and to be able to find new discs based off recomendations. Want to get Started?</p>
+        <a href="/signup" class="btn btn-warning text-dark w-25">Sign Up</a>
+    </div>
+</div>
+<div class="container-flex">
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3 class="display-4 mx-5">How it Works</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <hr class="border-primary mx-5">
+        </div>
+    </div>
+    <div class="row d-flex justify-content-center">
+        <div class="card col-2 mx-5">
+            <div class="d-flex justify-content-center align-items-center py-5">
+                <img src="/static/images/magnifying.png" class="card-img-top icon-img" alt="Magnifying glass icon">
+            </div>
+            <div class="card-body my-3">
+              <h5 class="card-title">Discover Discs</h5>
+              <hr class="border-primary">
+              <p class="card-text"> 
+                    Discover discs from many different manufacturers. You will also be able to see reviews from users that
+                    have owned the disc for awhile to see how it throws after it's been broken in.
+                </p>
+            </div>
+        </div>
+        <div class="card col-2 mx-5">
+            <div class="d-flex justify-content-center align-items-center py-5">
+                <img src="/static/images/quiver.png" class="card-img-top icon-img" alt="Quiver icon">
+            </div>
+            <div class="card-body my-3">
+                <h5 class="card-title">Add Discs to your Quiver</h5>
+                <hr class="border-primary">
+                <p class="card-text">
+                    Add the discs you already own to your quiver to see recommendations based of off them.
+                    You can also see stats based on your bag to help you decide which discs to get next.
+                </p>
+            </div>
+        </div>
+        <div class="card col-2 mx-5">
+            <div class="d-flex justify-content-center align-items-center py-5">
+                <img src="/static/images/present.png" class="card-img-top icon-img" alt="Present icon">
+            </div>
+            <div class="card-body my-3">
+                <h5 class="card-title">Add Discs to your Wishlist</h5>
+                <hr class="border-primary">
+                <p class="card-text">
+                    Add discs to your wishlist in order to remember which ones you may want to purchase later.
+                </p>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
