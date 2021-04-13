@@ -75,22 +75,6 @@
                 <hr>
                 <div class="row">
                     <div class="col-12 d-flex justify-content-between align-items-center">
-                        {{ form.l_stability_check.label }} {{ form.l_stability_check}}
-                    </div>
-                    <div class="col-12 d-flex justify-content-between align-items-center">
-                        <p>0 - 5</p>
-                    </div>
-                    <div class="col-12 d-flex justify-content-between align-items-center">
-                        {{ form.low_stability(class="form-control w-75", min="0", max="5", oninput="low_stabilityIdVal.value = low_stabilityId.value")}}
-                        <span class="">
-                            <output name="low_stability" id="low_stabilityIdVal" class="badge badge-primary badge-pill"></output>
-                            <p class="search-value badge badge-primary badge-pill" id="low_stability-value"></p>
-                        </span>
-                    </div>
-                </div>
-                <hr>
-                <div class="row">
-                    <div class="col-12 d-flex justify-content-between align-items-center">
                         {{ form.h_stability_check.label }} {{ form.h_stability_check}}
                     </div>
                     <div class="col-12 d-flex justify-content-between align-items-center">
@@ -101,6 +85,22 @@
                         <span class="">
                             <output name="high_stability" id="high_stabilityIdVal" class="badge badge-primary badge-pill"></output>
                             <p class="search-value badge badge-primary badge-pill" id="high_stability-value"></p>
+                        </span>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                        {{ form.l_stability_check.label }} {{ form.l_stability_check}}
+                    </div>
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                        <p>0 - 5</p>
+                    </div>
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                        {{ form.low_stability(class="form-control w-75", min="0", max="5", oninput="low_stabilityIdVal.value = low_stabilityId.value")}}
+                        <span class="">
+                            <output name="low_stability" id="low_stabilityIdVal" class="badge badge-primary badge-pill"></output>
+                            <p class="search-value badge badge-primary badge-pill" id="low_stability-value"></p>
                         </span>
                     </div>
                 </div>

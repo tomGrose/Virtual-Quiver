@@ -51,8 +51,8 @@ function handleSearchValues(){
     const inputs = [document.querySelector('#difficultyId'),
         document.querySelector('#speedId'),
         document.querySelector('#glideId'),
-        document.querySelector('#high_stabilityId'),
-        document.querySelector('#low_stabilityId')];
+        document.querySelector('#low_stabilityId'),
+        document.querySelector('#high_stabilityId')];
 
 
     outputs.forEach((val, indx) => {
@@ -96,3 +96,7 @@ function handleHomeView() {
         document.querySelector('#discs-display-container').hidden = true;
     }
 }
+
+$(function () {
+    $('[data-toggle="popover"]').popover()
+  })

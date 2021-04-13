@@ -65,9 +65,9 @@ class Disc_Search_Form(FlaskForm):
     speed = IntegerRangeField('Speed', id="speedId")
     glide_check = BooleanField('Search Glide')
     glide = IntegerRangeField('Glide', id="glideId")
-    l_stability_check = BooleanField('Search Low Stability')
+    l_stability_check = BooleanField('Search Fade')
     low_stability = IntegerRangeField('Low Stability', id="low_stabilityId")
-    h_stability_check = BooleanField('Search High Stability')
+    h_stability_check = BooleanField('Search Turn')
     high_stability = IntegerRangeField('High Stability', id="high_stabilityId")
     disc_type = SelectField('Disc Type', 
                             choices=[
