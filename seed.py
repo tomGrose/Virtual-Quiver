@@ -1,7 +1,7 @@
 ## Import data about manufacturers and discs from the API and save them the database ##
 
 import requests
-from models import db, connect_db, Disc, Manufacturer
+from models import db, connect_db, Disc, Manufacturer, Innapropriate_Word
 from app import db
 
 
@@ -60,10 +60,24 @@ def populate_discs():
         db.session.add(new_disc)
        
 
-        
+def populate_innapropriate_words(): 
+    file = open("static/text/vulgar-words.txt", "r")
 
+
+    for w in file:
+        stripped_word = str(w.strip("\n"))
+        new_word = Innapropriate_Word(word=stripped_word)
+        db.session.add(new_word)
+
+
+    file.close()
+
+db.drop_all()
+db.create_all()
 
 populate_manufacturers()
 db.session.commit()
 populate_discs()
+db.session.commit()
+populate_innapropriate_words()
 db.session.commit()

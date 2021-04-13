@@ -38,8 +38,8 @@ class UserSignupForm(BaseModelForm):
                     raise ValidationError(f'{w.word} is not allowed')
 
     def validate_password(self, password):
-        username = username.data
-        if " " in username:
+        pw = password.data
+        if " " in pw:
             raise ValidationError('No spaces in passwords')
 
 

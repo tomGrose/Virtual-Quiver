@@ -42,7 +42,6 @@ login_manager.needs_refresh_message = 'You must login again before you make any 
 mail = Mail(app)
 
 connect_db(app)
-db.create_all()
 
 
 ##############################################################################
