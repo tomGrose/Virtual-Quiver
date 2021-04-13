@@ -47,7 +47,7 @@ async function handleDiscAdd(discId){
 }
 
 async function handleWishlistAdd(discId){
-    resp = await axios.post('https://virtual-quiver.herokuapp.com/wishlist/add', {'disc_id': discId});
+    resp = await axios.post('https://virtual-quiver.herokuapp.com/discs/wishlist/add', {'disc_id': discId});
 }
 
 async function handleRemoveFromWishlist(discId){
