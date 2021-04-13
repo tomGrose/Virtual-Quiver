@@ -43,17 +43,17 @@ document.addEventListener("DOMContentLoaded", function(event) {
 });
 
 async function handleDiscAdd(discId){
-    resp = await axios.post('http://127.0.0.1:5000/discs/add', {'disc_id': discId});
+    resp = await axios.post('https://virtual-quiver.herokuapp.com/discs/add', {'disc_id': discId});
 }
 
 async function handleWishlistAdd(discId){
-    resp = await axios.post('http://127.0.0.1:5000/discs/wishlist/add', {'disc_id': discId});
+    resp = await axios.post('https://virtual-quiver.herokuapp.com/wishlist/add', {'disc_id': discId});
 }
 
 async function handleRemoveFromWishlist(discId){
-    resp = await axios.post('http://127.0.0.1:5000/discs/wishlist/remove', {'disc_id': discId});
+    resp = await axios.post('https://virtual-quiver.herokuapp.com/discs/wishlist/remove', {'disc_id': discId});
 }
 
 async function handleRemoveFromBag(discId){
-    resp = await axios.post('http://127.0.0.1:5000/discs/remove', {'disc_id': discId});
+    resp = await axios.post('https://virtual-quiver.herokuapp.com/discs/remove', {'disc_id': discId});
 }
