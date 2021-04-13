@@ -4,7 +4,7 @@ https://virtual-quiver.herokuapp.com/
 ### Overview
 Virtual Quiver was designed with the purpose of helping users (more specifically, disc golfers) find new disc golf discs. 
 It achieves this goal in multiple ways.
-One of the unique things about this application is that it let's user's save discs to their "quiver" that they already own. They are then able to see recommendations for new discs based off of the ones in their "quiver".
+One of the unique things about this application is that it let's user's save discs to their "quiver" that they already own. They are then able to see recommendations for new discs based off of the discs in their quiver.
 Users are also able to discover discs by utilizing the search feature with filters based on the different attributes disc golf discs have.
 
 Personalized reccomendations and a robust search feature are just the start however. 
