@@ -21,7 +21,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = (os.environ.get('DATABASE_URL', 'postgre
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', "SupaSecret")
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', "secret")
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=7)
 app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
