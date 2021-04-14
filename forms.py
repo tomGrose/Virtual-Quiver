@@ -15,6 +15,8 @@ BaseModelForm = model_form_factory(FlaskForm)
 def choice_query():
     return current_user.discs
 
+### Validator Functions ###
+
 def check_vulgar_words(form, field):
         content = field.data
         for w in Innapropriate_Word.query.all():

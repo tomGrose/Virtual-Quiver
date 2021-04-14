@@ -395,7 +395,7 @@ def search_discs():
     """ View to handle users searching for discs with the search bar """
 
     disc_name = request.args.get('disc_name')
-    discs = (Disc.query.filter(Disc.name.like(f"%{disc_name}%")).paginate(per_page=21, page=1, error_out=True))
+    discs = (Disc.query.filter(Disc.name.like(f"%{disc_name.lower()}%")).paginate(per_page=21, page=1, error_out=True))
     user_discs = []
     user_wishes = []
     form = Disc_Search_Form()
