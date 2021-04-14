@@ -15,6 +15,7 @@ BaseModelForm = model_form_factory(FlaskForm)
 def choice_query():
     return current_user.discs
 
+
 ### Validator Functions ###
 
 def check_vulgar_words(form, field):
@@ -58,7 +59,7 @@ class User_Discs_Recs(BaseModelForm):
     options = QuerySelectField('Disc', query_factory=choice_query, allow_blank=False, get_label='name')
 
 
-class Disc_Search_Form(FlaskForm):
+class Disc_Search_Form(BaseModelForm):
     """Form for editing users."""
 
     difficulty_check = BooleanField('Search Difficulty')
@@ -79,6 +80,7 @@ class Disc_Search_Form(FlaskForm):
                             ('fairway', 'Fairway Driver'), 
                             ('driver', 'Driver')]
                             )
+    manufacturer = SelectField('Manufacturer')
 
 
 class Delete_Account(FlaskForm):

@@ -114,3 +114,34 @@ If you did not make this request please ignore this email and no changes will be
     mail.send(msg)
 
 
+def construct_disc_search(form, page_num=1):
+    """ Put together a search query for the disc database and return a pagination object"""
+
+    filters = {}
+
+    if form.difficulty_check.data:
+        filters['difficulty'] = form.difficulty.data
+        
+    if form.speed_check.data:
+        filters['speed'] = form.speed.data
+
+    if form.glide_check.data:
+        filters['glide'] = form.glide.data
+
+    if form.h_stability_check.data:
+        filters['high_stability'] = form.high_stability.data
+
+    if form.l_stability_check.data:
+        filters['low_stability'] = form.low_stability.data
+
+    if form.disc_type.data != 'all':
+        filters['disc_type'] = form.disc_type.data
+
+    if form.manufacturer.data != 'all':
+        filters['manufacturers_name'] = form.manufacturer.data
+        
+
+    search_discs = (Disc.query.filter_by(**filters)
+                                        .paginate(per_page=21, page=page_num, error_out=True))
+
+    return search_discs

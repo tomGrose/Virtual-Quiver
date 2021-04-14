@@ -11,7 +11,7 @@ from models import (db, connect_db, User, Disc, User_Wishlist, User_Disc, Manufa
 from flask_login import LoginManager, login_user, login_required, current_user, logout_user, fresh_login_required
 from datetime import timedelta, datetime
 from flask_mail import Mail
-from helpers import generate_ran_recs, get_stats, populate_broken_in_discs, send_reset_email, send_username_reminder
+from helpers import generate_ran_recs, get_stats, populate_broken_in_discs, send_reset_email, send_username_reminder, construct_disc_search
 
 
 app = Flask(__name__)
@@ -282,7 +282,6 @@ def show_discs(page_num):
     user_discs = []
     user_wishes = []
 
-    form = Disc_Search_Form()
 
     if current_user.is_authenticated:
         user = User.query.get(current_user.id)
@@ -290,32 +289,13 @@ def show_discs(page_num):
         user_wishes = user.wish_discs
 
     
-
+    form = Disc_Search_Form()
+    manufacturer_choices = [(m.name, m.name) for m in Manufacturer.query.order_by('name')]
+    manufacturer_choices.insert(0, ('all', 'All Manufacturers'))
+    form.manufacturer.choices = manufacturer_choices
     if form.validate_on_submit():
 
-        filters = {}
-
-        if form.difficulty_check.data:
-            filters['difficulty'] = form.difficulty.data
-            
-        if form.speed_check.data:
-            filters['speed'] = form.speed.data
-
-        if form.glide_check.data:
-            filters['glide'] = form.glide.data
-
-        if form.h_stability_check.data:
-            filters['high_stability'] = form.high_stability.data
-
-        if form.l_stability_check.data:
-            filters['low_stability'] = form.low_stability.data
-
-        if form.disc_type.data != 'all':
-            filters['disc_type'] = form.disc_type.data
-         
-
-        search_discs = (Disc.query.filter_by(**filters)
-                                            .paginate(per_page=21, page=page_num, error_out=True))
+        search_discs = construct_disc_search(form, page_num)
 
     
         return render_template('discs/discover-discs.html', 
@@ -390,7 +370,7 @@ def remove_from_wishlist():
     resp = jsonify({'disc_removed_from_wishlist': 'Success'})
     return (resp, 201)
 
-@app.route('/discs/search')
+@app.route('/discs/search', methods=['GET', 'POST'])
 def search_discs():
     """ View to handle users searching for discs with the search bar """
 
@@ -398,12 +378,24 @@ def search_discs():
     discs = (Disc.query.filter(Disc.name.like(f"%{disc_name.lower()}%")).paginate(per_page=21, page=1, error_out=True))
     user_discs = []
     user_wishes = []
-    form = Disc_Search_Form()
 
     if current_user.is_authenticated:
         user = User.query.get(current_user.id)
         user_discs = user.discs
         user_wishes = user.wish_discs
+    
+    form = Disc_Search_Form()
+    manufacturer_choices = [(m.name, m.name) for m in Manufacturer.query.order_by('name')]
+    manufacturer_choices.insert(0, ('all', 'All Manufacturers'))
+    form.manufacturer.choices = manufacturer_choices
+    if form.validate_on_submit():
+        search_discs = construct_disc_search(form)
+        
+        return render_template('discs/discover-discs.html', 
+                            threads=search_discs, 
+                            users_discs=user_discs, 
+                            user_wishes=user_wishes,
+                            form=form)
 
     return render_template('discs/discover-discs.html', threads=discs, users_discs=user_discs, user_wishes=user_wishes, form=form)
 
