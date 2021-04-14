@@ -44,13 +44,14 @@ def populate_discs():
         l_stability = disc.get('low_stability')
         manufacturer = disc.get('compaby_name')
         image_url = disc.get('image_url')
-        if speed <= 3:
+        speed_int = int(speed)
+        if speed_int <= 3:
             disc_type = 'putter'
-        if speed > 3 and speed <= 5:
+        if speed_int > 3 and speed <= 5:
             disc_type = 'mid'
-        if speed > 5 and speed <= 8:
+        if speed_int > 5 and speed <= 8:
             disc_type = 'fairway'
-        if speed > 8:
+        if speed_int > 8:
             disc_type = 'driver'
 
         
