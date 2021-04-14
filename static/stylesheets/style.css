@@ -91,7 +91,7 @@
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    min-height: 300px;
+    min-height: 500px;
 }
 
 .icon-img {
@@ -111,4 +111,8 @@
 
 .bg-light-grey {
     background-color: #919191;
+}
+
+.mw-90 {
+    max-width: 90%;
 }

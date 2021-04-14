@@ -12,17 +12,17 @@
       </div>
     </div>
 </div>
-<div class="container-flex mt-4">
-    <div class="row">
+<div class="container-flex mt-4 mw-100">
+    <div class="row mw-100 mx-0">
         <div class="col-6 ml-3">
             <h2 class="display-4">Discover your new favorite disc</h2>
         </div>
     </div>
 </div>
 <hr class="border-primary mx-4">
-<div class="flex-container my-5">
-    <div class="row m-4">
-        <div class="col-3">
+<div class="flex-container my-5 mw-100 mx-0">
+    <div class="row my-4 mw-100 mx-0">
+        <div class="col-3 mx-3">
             <form method="POST">
                 {{ form.hidden_tag() }}
                 <div class="row">
@@ -118,7 +118,7 @@
                 </div>
             </form>
         </div>
-        <div class="col-9">
+        <div class="col">
             {% if threads.items|length == 0 %}
                 <div class="text-center w-75 m-auto alert alert-danger" role="alert">
                     Sorry there were no discs that matched your search results! Please try some different parameters, and remember to check/uncheck the different parameters.

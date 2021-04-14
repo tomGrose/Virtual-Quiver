@@ -20,7 +20,6 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = (os.environ.get('DATABASE_URL', 'postgres:///virtualQuiver'))
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
-app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', "secret")
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=7)
@@ -195,7 +194,7 @@ def forgot_password_request():
     if current_user.is_authenticated:
         return redirect(url_for('homepage'))
 
-    form = Forgot_Password_Form()
+    form = Forgot_Form()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         send_reset_email(mail, user)

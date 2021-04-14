@@ -114,9 +114,3 @@ If you did not make this request please ignore this email and no changes will be
     mail.send(msg)
 
 
-# def clean_wish_discs(user, users_discs, user_wish_discs):
-#     for d in user_wish_discs:
-#         if d in users_discs:
-#             wish_disc = User_Wishlist.query.filter_by(user_id = f'{user.id}', disc_id = f'{d.id}').first()
-#             db.session.delete(wish_disc)
-#             db.session.commit()

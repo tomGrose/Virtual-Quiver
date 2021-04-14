@@ -6,7 +6,7 @@ from wtforms.fields.html5 import DecimalRangeField, IntegerRangeField
 from wtforms.validators import DataRequired, Length, Email, NumberRange, EqualTo, ValidationError
 from wtforms.widgets import TextArea
 from wtforms_alchemy.fields import QuerySelectField
-from models import Disc, User, Innapropriate_Word
+from models import Disc, User, Innapropriate_Word, US_STATES
 
 BaseModelForm = model_form_factory(FlaskForm)
 
@@ -88,7 +88,7 @@ class User_Edit_Form(FlaskForm):
     email = StringField('E-mail', validators=[DataRequired(), Email()])
     first_name = StringField('First Name', validators=[DataRequired()])
     last_name = StringField('Last Name', validators=[DataRequired()])
-    location = StringField('State', validators=[DataRequired()])
+    location = SelectField('State', validators=[DataRequired()], choices=US_STATES)
     image_url = StringField('(Optional) Profile Image URL')
 
 
