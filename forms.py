@@ -21,8 +21,13 @@ def choice_query():
 def check_vulgar_words(form, field):
         content = field.data
         for w in Innapropriate_Word.query.all():
-            if w.word in content:
+            if w.word in content.lower():
                 raise ValidationError(f'{w.word} is not allowed')
+
+def check_spaces(form, field):
+        content = field.data
+        if " " in content:
+            raise ValidationError('No Spaces')
 
 class UserSignupForm(BaseModelForm):
     """Form for adding users."""
@@ -30,20 +35,9 @@ class UserSignupForm(BaseModelForm):
     class Meta:
         model = User
         exclude = ['alternate_id']
-
-    def validate_username(self, username):
-        username = username.data
-        if " " in username:
-            raise ValidationError('No spaces in usernames')
-        else:
-            for w in Innapropriate_Word.query.all():
-                if w.word in username:
-                    raise ValidationError(f'{w.word} is not allowed')
-
-    def validate_password(self, password):
-        pw = password.data
-        if " " in pw:
-            raise ValidationError('No spaces in passwords')
+    
+    username = StringField('Username', validators=[DataRequired(), check_vulgar_words, check_spaces])
+    password = PasswordField("Password", validators=[Length(min=6), DataRequired(), check_spaces])
 
 
 class LoginForm(FlaskForm):

@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, render_template, request, flash, redirect, session, g, url_for, jsonify
+from flask import Flask, render_template, request, flash, redirect, session, url_for, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
 from sqlalchemy import func
@@ -105,7 +105,7 @@ def login():
             login_user(user, remember=True)
             populate_broken_in_discs(current_user.discs, current_user.broken_in_discs, current_user)
             flash("Welcome Back!", "success")
-            return redirect("/")
+            return redirect(url_for('homepage'))
 
         flash("Invalid credentials.", 'danger')
 
@@ -119,7 +119,7 @@ def logout():
 
     logout_user()
     flash ("Logged out succesfully!", 'success')
-    return redirect("/")
+    return redirect(url_for('homepage'))
 
 
 
@@ -148,7 +148,8 @@ def delete_user_account():
         db.session.commit()
         logout_user()
         flash ("Account deleted succesfully", 'success')
-        return redirect("/")
+        return redirect(url_for('homepage'))
+
     flash('You did not select to have your account deleted', 'danger')
     return redirect(url_for('show_user_profile', user_id=current_user.id))
 
@@ -160,7 +161,7 @@ def edit_users_account(user_id):
 
     if user_id != current_user.id:
         flash("You do not have permission to do that", "danger")
-        return redirect("/")
+        return redirect(url_for('homepage'))
 
     form = User_Edit_Form(obj=current_user)
 
@@ -265,6 +266,7 @@ def change_password(user_id):
             return redirect(url_for('login'))
         else:
             form.current_password.errors.append('Password Incorrect!')
+
     return render_template('users/reset-password.html', form=form)
         
 
@@ -378,7 +380,6 @@ def show_similiar_discs(disc_id, page_num):
     else:
         disc = Disc.query.get_or_404(disc_id)
 
-
     similiar_discs_threads = (Disc.query.filter_by(speed=f'{disc.speed}', 
                         high_stability=f'{disc.high_stability}', 
                         low_stability=f'{disc.low_stability}')
@@ -397,16 +398,7 @@ def show_users_recommendations():
     users_discs = current_user.discs
     rec_discs = generate_ran_recs(users_discs)
     form = User_Discs_Recs()
-    # if form.validate_on_submit():
-    #     page_num = 1
-    #     disc = form.options.data
-    #     similiar_discs_threads = (Disc.query.filter_by(speed=f'{disc.speed}', 
-    #                     high_stability=f'{disc.high_stability}', 
-    #                     low_stability=f'{disc.low_stability}')
-    #                     .filter(Disc.name != f"{disc.name}")
-    #                     .paginate(per_page=21, page=page_num, error_out=True))
-
-    #     return render_template('discs/disc-recommendations.html', disc=disc, threads=similiar_discs_threads, form=form)
+    
     return render_template('discs/users-recommendations.html', discs=rec_discs, form=form)
 
 
