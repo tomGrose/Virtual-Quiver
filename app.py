@@ -275,34 +275,29 @@ def change_password(user_id):
 
 @app.route('/discs/discover/page/<int:page_num>', methods=['GET', 'POST'])
 def show_discs(page_num):
-    """ Show all the discs in the database, allow users to search for discs using filters. If a user is
+    """ Show all the discs in the database, show search results from the search bar, and allow users to search for discs using filters. If a user is
     logged in they will be able to add the discs to their bag, or wishlist """
 
-    discs = (Disc.query.paginate(per_page=21, page=page_num, error_out=True))
     user_discs = []
     user_wishes = []
 
-
     if current_user.is_authenticated:
-        user = User.query.get(current_user.id)
-        user_discs = user.discs
-        user_wishes = user.wish_discs
+        user_discs = current_user.discs
+        user_wishes = current_user.wish_discs
 
-    
     form = Disc_Search_Form()
     manufacturer_choices = [(m.name, m.name) for m in Manufacturer.query.order_by('name')]
     manufacturer_choices.insert(0, ('all', 'All Manufacturers'))
     form.manufacturer.choices = manufacturer_choices
+
     if form.validate_on_submit():
-
-        search_discs = construct_disc_search(form, page_num)
-
-    
-        return render_template('discs/discover-discs.html', 
-                            threads=search_discs, 
-                            users_discs=user_discs, 
-                            user_wishes=user_wishes,
-                            form=form)
+        discs = construct_disc_search(form, page_num)
+    elif request.args.get('disc_name'):
+        disc_name = request.args.get('disc_name')
+        discs = (Disc.query.filter(Disc.name.like(f"%{disc_name.lower()}%"))
+                                    .paginate(per_page=21, page=page_num, error_out=True))
+    else:
+        discs = (Disc.query.paginate(per_page=21, page=page_num, error_out=True))
 
     return render_template('discs/discover-discs.html', 
                             threads=discs, 
@@ -358,6 +353,7 @@ def add_users_wish():
     resp = jsonify({"disc_added_to_wishlist": "Success"})
     return (resp, 201)
 
+
 @app.route('/discs/wishlist/remove', methods=['POST'])
 @login_required
 def remove_from_wishlist():
@@ -370,35 +366,6 @@ def remove_from_wishlist():
     resp = jsonify({'disc_removed_from_wishlist': 'Success'})
     return (resp, 201)
 
-@app.route('/discs/search', methods=['GET', 'POST'])
-def search_discs():
-    """ View to handle users searching for discs with the search bar """
-
-    disc_name = request.args.get('disc_name')
-    discs = (Disc.query.filter(Disc.name.like(f"%{disc_name.lower()}%")).paginate(per_page=21, page=1, error_out=True))
-    user_discs = []
-    user_wishes = []
-
-    if current_user.is_authenticated:
-        user = User.query.get(current_user.id)
-        user_discs = user.discs
-        user_wishes = user.wish_discs
-    
-    form = Disc_Search_Form()
-    manufacturer_choices = [(m.name, m.name) for m in Manufacturer.query.order_by('name')]
-    manufacturer_choices.insert(0, ('all', 'All Manufacturers'))
-    form.manufacturer.choices = manufacturer_choices
-    if form.validate_on_submit():
-        search_discs = construct_disc_search(form)
-        
-        return render_template('discs/discover-discs.html', 
-                            threads=search_discs, 
-                            users_discs=user_discs, 
-                            user_wishes=user_wishes,
-                            form=form)
-
-    return render_template('discs/discover-discs.html', threads=discs, users_discs=user_discs, user_wishes=user_wishes, form=form)
-
 
 @app.route('/discs/recommendations/disc/<int:disc_id>/page/<int:page_num>', methods=['GET', 'POST'])
 @login_required
@@ -406,9 +373,11 @@ def show_similiar_discs(disc_id, page_num):
     """ Show a user similiar discs to one they selected """
 
     form = User_Discs_Recs()
-    disc = Disc.query.get_or_404(disc_id)
     if form.validate_on_submit():
         disc = form.options.data
+    else:
+        disc = Disc.query.get_or_404(disc_id)
+
 
     similiar_discs_threads = (Disc.query.filter_by(speed=f'{disc.speed}', 
                         high_stability=f'{disc.high_stability}', 
@@ -428,16 +397,16 @@ def show_users_recommendations():
     users_discs = current_user.discs
     rec_discs = generate_ran_recs(users_discs)
     form = User_Discs_Recs()
-    if form.validate_on_submit():
-        page_num = 1
-        disc = form.options.data
-        similiar_discs_threads = (Disc.query.filter_by(speed=f'{disc.speed}', 
-                        high_stability=f'{disc.high_stability}', 
-                        low_stability=f'{disc.low_stability}')
-                        .filter(Disc.name != f"{disc.name}")
-                        .paginate(per_page=21, page=page_num, error_out=True))
+    # if form.validate_on_submit():
+    #     page_num = 1
+    #     disc = form.options.data
+    #     similiar_discs_threads = (Disc.query.filter_by(speed=f'{disc.speed}', 
+    #                     high_stability=f'{disc.high_stability}', 
+    #                     low_stability=f'{disc.low_stability}')
+    #                     .filter(Disc.name != f"{disc.name}")
+    #                     .paginate(per_page=21, page=page_num, error_out=True))
 
-        return render_template('discs/disc-recommendations.html', disc=disc, threads=similiar_discs_threads, form=form)
+    #     return render_template('discs/disc-recommendations.html', disc=disc, threads=similiar_discs_threads, form=form)
     return render_template('discs/users-recommendations.html', discs=rec_discs, form=form)
 
 
@@ -479,6 +448,7 @@ def show_disc_page(disc_id):
     disc_in_wish_count = User_Wishlist.query.filter_by(disc_id = f'{disc.id}').count()
     reviews = Review.query.filter_by(disc_id=f'{disc.id}').all()
     broken_in_reviews = Broken_In_Review.query.filter_by(disc_id=f'{disc.id}').all()
+
     return render_template('discs/disc.html', 
                             disc=disc, 
                             reviews=reviews, 
@@ -541,10 +511,5 @@ def homepage():
 
 @app.route('/about')
 def show_about():
-    """ SHow about page for the website"""
+    """ Show about page for the website"""
     return render_template('about.html')
-
-
-@app.route('/information')
-def show_info():
-    return render_template('info.html')

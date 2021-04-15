@@ -32,7 +32,20 @@
                         This page is a random assortment of recommendations for discs based off of what you already have in your quiver.
                         Use the box below to choose a disc from your quiver to see recommendations based solely on that disc.
                     </p>
-                    {% include 'users/form.html' %}
+                    <form action="/discs/recommendations/disc/1/page/1" method="POST">
+                        {{ form.hidden_tag() }}
+                        {% for field in form if field.widget.input_type != 'hidden' %}
+                        <div class="form-group">
+                            {% for error in field.errors %}
+                                <span class="text-danger">{{ error }}</span>
+                                <br>
+                            {% endfor %}
+                            {{ field.label(for="field.id") }}
+                            {{ field(placeholder=field.label.text, class="form-control") }}
+                        </div>
+                        {% endfor %}
+                        <button type="submit" class="btn btn-success">Submit</button>
+                    </form>
                 </div>
             </div>
         </div>
