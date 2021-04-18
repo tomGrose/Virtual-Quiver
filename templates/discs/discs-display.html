@@ -2,7 +2,7 @@
 <div class="flex-container">
     <div class="row" id="discs-display-container">
         {% for d in threads.items %}
-        <div class="col-4">
+        <div class="col-4 mb-4">
             <div class="card border-secondary"  id="{{d.id}}-card">
                 <div class="m-auto w-75">
                     <img class="card-img-top disc-img" src="{{d.image_url}}" alt="{{d.name}} image">
@@ -73,6 +73,12 @@
                             </div>
                         </div>
                         {% endif %}
+                    {% else %}
+                    <div class="row">
+                        <div class="col-12">
+                            <a  href="/signup" class="btn btn-primary w-100">Signup to add discs to your quiver and wishlist!</a>
+                        </div>
+                    </div>
                     {% endif %}
                 </div>
             </div>

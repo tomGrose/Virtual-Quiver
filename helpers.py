@@ -7,6 +7,7 @@ from flask_mail import Mail, Message
 from flask import url_for
 
 def generate_ran_recs(users_discs):
+    """ Take all the discs in a user's bag and return a random assortment of recommendations"""
     recs = []
     if len(users_discs) >=1:
         for disc in users_discs:
@@ -96,6 +97,7 @@ If you did not make this request please ignore this email and no changes will be
 '''
     mail.send(msg)
 
+
 def send_username_reminder(mail, user):
     """ Send a username reminder email to a user """
 
@@ -115,7 +117,8 @@ If you did not make this request please ignore this email and no changes will be
 
 
 def construct_disc_search(form, page_num=1):
-    """ Put together a search query for the disc database and return a pagination object"""
+    """ Put together a search query for the disc database based on the form submittal data
+     and return a pagination object"""
 
     filters = {}
 

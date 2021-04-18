@@ -5,13 +5,15 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
 from sqlalchemy import func
 from forms import (UserSignupForm, LoginForm, User_Discs_Recs, Disc_Search_Form, Delete_Account, User_Edit_Form, 
-                User_Review, Forgot_Form, Reset_Password_Form, Change_Password_Form) 
+                    User_Review, Forgot_Form, Reset_Password_Form, Change_Password_Form) 
 from models import (db, connect_db, User, Disc, User_Wishlist, User_Disc, Manufacturer, 
-                Disc_Review, Rec_Disc, User_Broken_In_Disc, Review, Broken_In_Review)
+                    Disc_Review, Rec_Disc, User_Broken_In_Disc, Review, Broken_In_Review)
 from flask_login import LoginManager, login_user, login_required, current_user, logout_user, fresh_login_required
 from datetime import timedelta, datetime
 from flask_mail import Mail
-from helpers import generate_ran_recs, get_stats, populate_broken_in_discs, send_reset_email, send_username_reminder, construct_disc_search
+from helpers import (generate_ran_recs, get_stats, populate_broken_in_discs, 
+                    send_reset_email, send_username_reminder, construct_disc_search)
+from flask_talisman import Talisman
 
 
 app = Flask(__name__)
@@ -29,8 +31,6 @@ app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME', 'virtualquiverdiscs@gmail.com')
 app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
 
-toolbar = DebugToolbarExtension(app)
-mail = Mail(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -39,8 +39,17 @@ login_manager.refresh_view = 'login'
 login_manager.needs_refresh_message = 'You must login again before you make any changes'
 
 mail = Mail(app)
-
 connect_db(app)
+toolbar = DebugToolbarExtension(app)
+
+if os.environ.get('FLASK_ENV') == 'production':
+    csp = {
+        'default-src': '\'self\'',
+        'img-src': '*',
+        'script-src': '*'
+        }
+    Talisman(app, content_security_policy=csp)
+
 
 
 ##############################################################################
@@ -433,9 +442,15 @@ def show_disc_page(disc_id):
         db.session.commit()
         flash("Review Added!", "success")
         return redirect(url_for('show_disc_page', disc_id=disc.id))
+
+    if current_user.is_authenticated:
+        users_discs = current_user.discs
+        users_wish_discs = current_user.wish_discs
+    else:
+        users_discs = []
+        users_wish_discs = []
     
-    users_discs = current_user.discs
-    users_wish_discs = current_user.wish_discs
+    
     disc_in_bag_count = User_Disc.query.filter_by(disc_id = f'{disc.id}').count()
     disc_in_wish_count = User_Wishlist.query.filter_by(disc_id = f'{disc.id}').count()
     reviews = Review.query.filter_by(disc_id=f'{disc.id}').all()
