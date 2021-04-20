@@ -289,12 +289,12 @@ def show_discs(page_num):
     """ Show all the discs in the database, show search results from the search bar, and allow users to search for discs using filters. If a user is
     logged in they will be able to add the discs to their bag, or wishlist """
 
-    user_discs = []
-    user_wishes = []
-
     if current_user.is_authenticated:
         user_discs = current_user.discs
         user_wishes = current_user.wish_discs
+    else:
+        user_discs = []
+        user_wishes = []
 
     form = Disc_Search_Form()
     manufacturer_choices = [(m.name, m.name) for m in Manufacturer.query.order_by('name')]
@@ -316,6 +316,24 @@ def show_discs(page_num):
                             user_wishes=user_wishes,
                             form=form)
 
+# @app.route('/discs/search/page/<int:page_num>')
+# def search_discs(page_num):
+
+#     if current_user.is_authenticated:
+#         user_discs = current_user.discs
+#         user_wishes = current_user.wish_discs
+#     else:
+#         user_discs = []
+#         user_wishes = []
+#     form = Disc_Search_Form()
+#     disc_name = request.args.get('disc_name')
+#     discs = (Disc.query.filter(Disc.name.like(f"%{disc_name.lower()}%"))
+#                                     .paginate(per_page=2, page=page_num, error_out=True))
+#     return render_template('discs/discover-discs.html', 
+#                             threads=discs, 
+#                             users_discs=user_discs, 
+#                             user_wishes=user_wishes,
+#                             form=form)
 
 @app.route('/discs/add', methods=['POST'])
 @login_required
