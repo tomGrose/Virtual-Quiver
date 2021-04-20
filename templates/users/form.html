@@ -1,15 +1,13 @@
 
-<form method="POST">
-    {{ form.hidden_tag() }}
-    {% for field in form if field.widget.input_type != 'hidden' %}
-    <div class="form-group">
-        {% for error in field.errors %}
-            <span class="text-danger">{{ error }}</span>
-            <br>
-        {% endfor %}
-        {{ field.label(for="field.id") }}
-        {{ field(placeholder=field.label.text, class="form-control") }}
-    </div>
+{{ form.hidden_tag() }}
+{% for field in form if field.widget.input_type != 'hidden' %}
+<div class="form-group">
+    {% for error in field.errors %}
+        <span class="text-danger">{{ error }}</span>
+        <br>
     {% endfor %}
-    <button type="submit" class="btn btn-success">Submit</button>
-</form>
+    {{ field.label(for="field.id") }}
+    {{ field(placeholder=field.label.text, class="form-control") }}
+</div>
+{% endfor %}
+<button type="submit" class="btn btn-success">Submit</button>

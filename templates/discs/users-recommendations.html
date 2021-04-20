@@ -32,19 +32,8 @@
                         This page is a random assortment of recommendations for discs based off of what you already have in your quiver.
                         Use the box below to choose a disc from your quiver to see recommendations based solely on that disc.
                     </p>
-                    <form action="/discs/recommendations/disc/1/page/1" method="POST">
-                        {{ form.hidden_tag() }}
-                        {% for field in form if field.widget.input_type != 'hidden' %}
-                        <div class="form-group">
-                            {% for error in field.errors %}
-                                <span class="text-danger">{{ error }}</span>
-                                <br>
-                            {% endfor %}
-                            {{ field.label(for="field.id") }}
-                            {{ field(placeholder=field.label.text, class="form-control") }}
-                        </div>
-                        {% endfor %}
-                        <button type="submit" class="btn btn-success">Submit</button>
+                    <form action="{{url_for('show_similiar_discs', disc_id=1)}}" method="GET">
+                        {% include 'users/form.html' %}
                     </form>
                 </div>
             </div>
@@ -57,7 +46,7 @@
                         <h4>You have not added any discs to your quiver yet!</h4>
                         <p>
                           To get started, head over to 
-                          <span><a href="/discs/discover/page/1">discover</a></span> 
+                          <span><a href="{{url_for('show_discs')}}">discover</a></span> 
                           to add discs to your quiver to see a randomized list of recommended discs here. 
                           You will even be able to individually select a disc from your quiver to see more discs like it!
                         </p>

@@ -11,6 +11,10 @@
                             <li class="page-item"><a class="page-link border-primary" href="{{ url_for('show_discs', page_num=page) }}">{{ page }}</a></li>
                         {% elif request.endpoint == 'show_similiar_discs' %}
                             <li class="page-item"><a class="page-link border-primary" href="{{url_for('show_similiar_discs', disc_id=disc.id, page_num=page)}}">{{ page }}</a></li>
+                        {% elif request.endpoint == 'filter_discs' %}
+                            <li class="page-item"><a class="page-link border-primary" href="{{ url_for('filter_discs', page_num=page, **search_args) }}">{{ page }}</a></li>
+                        {% elif request.endpoint == 'search_discs' %}
+                            <li class="page-item"><a class="page-link border-primary" href="{{ url_for('search_discs', page_num=page, **search_args) }}">{{ page }}</a></li>
                         {% endif %}
                     {% endif %}
                     

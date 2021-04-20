@@ -116,32 +116,32 @@ If you did not make this request please ignore this email and no changes will be
     mail.send(msg)
 
 
-def construct_disc_search(form, page_num=1):
+def construct_disc_search(args, page_num=1):
     """ Put together a search query for the disc database based on the form submittal data
      and return a pagination object"""
 
     filters = {}
 
-    if form.difficulty_check.data:
-        filters['difficulty'] = form.difficulty.data
+    if args.get('difficulty_check'):
+        filters['difficulty'] = args.get('difficulty')
         
-    if form.speed_check.data:
-        filters['speed'] = form.speed.data
+    if args.get('speed_check'):
+        filters['speed'] = args.get('speed')
 
-    if form.glide_check.data:
-        filters['glide'] = form.glide.data
+    if args.get('glide_check'):
+        filters['glide'] = args.get('glide')
 
-    if form.h_stability_check.data:
-        filters['high_stability'] = form.high_stability.data
+    if args.get('h_stability_check'):
+        filters['high_stability'] = args.get('high_stability')
 
-    if form.l_stability_check.data:
-        filters['low_stability'] = form.low_stability.data
+    if args.get('l_stability_check'):
+        filters['low_stability'] = args.get('low_stability')
 
-    if form.disc_type.data != 'all':
-        filters['disc_type'] = form.disc_type.data
+    if args.get('disc_type') != 'all':
+        filters['disc_type'] = args.get('disc_type')
 
-    if form.manufacturer.data != 'all':
-        filters['manufacturers_name'] = form.manufacturer.data
+    if args.get('manufacturer') != 'all':
+        filters['manufacturers_name'] = args.get('manufacturer')
         
 
     search_discs = (Disc.query.filter_by(**filters)

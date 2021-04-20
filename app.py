@@ -50,7 +50,7 @@ if os.environ.get('FLASK_ENV') == 'production':
         }
     Talisman(app, content_security_policy=csp)
 
-
+PER_PAGE = 18
 
 ##############################################################################
 # User signup/login/logout
@@ -284,10 +284,9 @@ def change_password(user_id):
 # ##############################################################################
 # # Disc routes:
 
-@app.route('/discs/discover/page/<int:page_num>', methods=['GET', 'POST'])
-def show_discs(page_num):
-    """ Show all the discs in the database, show search results from the search bar, and allow users to search for discs using filters. If a user is
-    logged in they will be able to add the discs to their bag, or wishlist """
+@app.route('/discs/discover')
+def show_discs():
+    """ Show all the discs in the database, render a search form on the side that will route to discs/filter """
 
     if current_user.is_authenticated:
         user_discs = current_user.discs
@@ -296,19 +295,14 @@ def show_discs(page_num):
         user_discs = []
         user_wishes = []
 
+    page_num = request.args.get('page_num', 1, type=int)
+
     form = Disc_Search_Form()
     manufacturer_choices = [(m.name, m.name) for m in Manufacturer.query.order_by('name')]
     manufacturer_choices.insert(0, ('all', 'All Manufacturers'))
     form.manufacturer.choices = manufacturer_choices
 
-    if form.validate_on_submit():
-        discs = construct_disc_search(form, page_num)
-    elif request.args.get('disc_name'):
-        disc_name = request.args.get('disc_name')
-        discs = (Disc.query.filter(Disc.name.like(f"%{disc_name.lower()}%"))
-                                    .paginate(per_page=21, page=page_num, error_out=True))
-    else:
-        discs = (Disc.query.paginate(per_page=21, page=page_num, error_out=True))
+    discs = (Disc.query.paginate(per_page=PER_PAGE, page=page_num, error_out=True))
 
     return render_template('discs/discover-discs.html', 
                             threads=discs, 
@@ -316,24 +310,66 @@ def show_discs(page_num):
                             user_wishes=user_wishes,
                             form=form)
 
-# @app.route('/discs/search/page/<int:page_num>')
-# def search_discs(page_num):
 
-#     if current_user.is_authenticated:
-#         user_discs = current_user.discs
-#         user_wishes = current_user.wish_discs
-#     else:
-#         user_discs = []
-#         user_wishes = []
-#     form = Disc_Search_Form()
-#     disc_name = request.args.get('disc_name')
-#     discs = (Disc.query.filter(Disc.name.like(f"%{disc_name.lower()}%"))
-#                                     .paginate(per_page=2, page=page_num, error_out=True))
-#     return render_template('discs/discover-discs.html', 
-#                             threads=discs, 
-#                             users_discs=user_discs, 
-#                             user_wishes=user_wishes,
-#                             form=form)
+@app.route('/discs/filter')
+def filter_discs():
+    """ Show the results of the search bar in the header. Form on the side will route to discs/filter """
+
+    if current_user.is_authenticated:
+        user_discs = current_user.discs
+        user_wishes = current_user.wish_discs
+    else:
+        user_discs = []
+        user_wishes = []
+
+    args = {k:v for k,v in request.args.items()}
+    page_num = int(args.pop('page_num', 1))
+
+    form = Disc_Search_Form()
+    manufacturer_choices = [(m.name, m.name) for m in Manufacturer.query.order_by('name')]
+    manufacturer_choices.insert(0, ('all', 'All Manufacturers'))
+    form.manufacturer.choices = manufacturer_choices
+
+    discs = construct_disc_search(request.args, page_num)
+
+    return render_template('discs/discover-discs.html', 
+                            search_args=args, 
+                            threads=discs, 
+                            users_discs=user_discs, 
+                            user_wishes=user_wishes,
+                            form=form)
+
+@app.route('/discs/search')
+def search_discs():
+    """ Take args from filter form and search the database. Display the results """
+
+    if current_user.is_authenticated:
+        user_discs = current_user.discs
+        user_wishes = current_user.wish_discs
+    else:
+        user_discs = []
+        user_wishes = []
+
+    args = {k:v for k,v in request.args.items()}
+    page_num = int(args.pop('page_num', 1))
+
+    form = Disc_Search_Form()
+
+    manufacturer_choices = [(m.name, m.name) for m in Manufacturer.query.order_by('name')]
+    manufacturer_choices.insert(0, ('all', 'All Manufacturers'))
+    form.manufacturer.choices = manufacturer_choices
+
+    disc_name = request.args.get('disc_name')
+    discs = (Disc.query.filter(Disc.name.like(f"%{disc_name.lower()}%"))
+                                    .paginate(per_page=PER_PAGE, page=page_num, error_out=True))
+
+    return render_template('discs/discover-discs.html', 
+                            search_args = args, 
+                            threads=discs, 
+                            users_discs=user_discs, 
+                            user_wishes=user_wishes,
+                            form=form)
+
 
 @app.route('/discs/add', methods=['POST'])
 @login_required
@@ -396,24 +432,29 @@ def remove_from_wishlist():
     return (resp, 201)
 
 
-@app.route('/discs/recommendations/disc/<int:disc_id>/page/<int:page_num>', methods=['GET', 'POST'])
+@app.route('/discs/recommendations/disc')
 @login_required
-def show_similiar_discs(disc_id, page_num):
+def show_similiar_discs():
     """ Show a user similiar discs to one they selected """
 
+    args = {k:v for k,v in request.args.items()}
+    page_num = int(args.pop('page_num', 1))
+
+    disc_id = request.args.get('disc_id', 1, type=int)
+    disc = Disc.query.get_or_404(disc_id)
+
     form = User_Discs_Recs()
-    if form.validate_on_submit():
-        disc = form.options.data
-    else:
-        disc = Disc.query.get_or_404(disc_id)
 
     similiar_discs_threads = (Disc.query.filter_by(speed=f'{disc.speed}', 
                         high_stability=f'{disc.high_stability}', 
                         low_stability=f'{disc.low_stability}')
                         .filter(Disc.name != f"{disc.name}")
-                        .paginate(per_page=21, page=page_num, error_out=True))
+                        .paginate(per_page=PER_PAGE, page=page_num, error_out=True))
 
-    return render_template('discs/disc-recommendations.html', disc=disc, threads=similiar_discs_threads, form=form)
+    return render_template('discs/disc-recommendations.html', disc=disc, 
+                                                            threads=similiar_discs_threads, 
+                                                            form=form, 
+                                                            search_args=args)
 
 
 @app.route('/discs/recommendations', methods=['GET', 'POST'])

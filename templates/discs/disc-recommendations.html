@@ -40,7 +40,9 @@
                 Use the box below to choose a disc from your quiver to see recommendations based on that disc.
             </p>
             <div class="m-3">
-                {% include 'users/form.html' %}
+                <form method="GET">
+                    {% include 'users/form.html' %}
+                </form>
             </div>
         </div>
         <div class="col-10 my-4 w-100">

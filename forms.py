@@ -50,7 +50,7 @@ class LoginForm(FlaskForm):
 class User_Discs_Recs(BaseModelForm):
     """Form for a user to see recommendations for discs based on the ones they own"""
 
-    options = QuerySelectField('Disc', query_factory=choice_query, allow_blank=False, get_label='name')
+    disc_id = QuerySelectField('Disc', query_factory=choice_query, allow_blank=False, get_label='name')
 
 
 class Disc_Search_Form(BaseModelForm):

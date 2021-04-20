@@ -64,6 +64,7 @@
                             <button data-id="{{disc.id}}" data-button-type="add-to-wishlist" id="wish-{{disc.id}}" class="btn btn-success">Wishlist</button>
                         {% endif %}
                     {% endif %}
+                    <a href="{{url_for('show_similiar_discs', disc_id=disc.id)}}"><button type="submit" class="btn btn-primary">Similiar discs</button></a>
                 </div>
             </div>
         </div>
@@ -141,7 +142,9 @@
                 <div id="collapseThree" class="collapse show" aria-labelledby="headingThree" data-parent="#accordion">
                     <div class="card-body">
                         {% if current_user.is_authenticated %}
+                        <form method="POST">
                             {% include 'users/form.html' %}
+                        </form>
                         {% else %}
                             <div class="card card-body">
                                 <p>Please <span><a href="/login">login</a></span> or <span><a href="/signup">signup</a></span> to leave a review!</p>

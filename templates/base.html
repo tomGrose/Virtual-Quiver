@@ -42,7 +42,7 @@
             </div>
           </div>
           <div class="col-6 d-flex align-items-center">
-              <form class="navbar-form w-100" action="/discs/search" method="GET">
+              <form class="navbar-form w-100" action="{{url_for('search_discs', page_num=1)}}" method="GET">
                   <div class="input-group">
                       <input name="disc_name" class="form-control" placeholder="Search Discs" id="search">
                       <div class="input-group-append">
@@ -66,13 +66,13 @@
     <ul class="nav navbar-nav navbar-right">
      
       {% if not current_user.is_authenticated %}
-      <li class="nav-item"><a class="nav-link" href="/discs/discover/page/1">Discover Discs</a></li>
+      <li class="nav-item"><a class="nav-link" href="{{url_for('show_discs')}}">Discover Discs</a></li>
       <li class="nav-item"><a class="nav-link" href="/signup">Sign up</a></li>
       <li class="nav-item"><a class="nav-link" href="/login">Log in</a></li>
       {% else %}
       <li class="nav-item"><a class="nav-link" href="/">My Quiver</a></li>
       <li class="nav-item"><a class="nav-link" href="/discs/wishlist">My Wishlist</a></li>
-      <li class="nav-item"><a class="nav-link" href="/discs/discover/page/1">Discover Discs</a></li>
+      <li class="nav-item"><a class="nav-link" href="{{url_for('show_discs')}}">Discover Discs</a></li>
       <li class="nav-item"><a class="nav-link" href="/discs/recommendations">Recommendations</a></li>
       <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
       <li class="nav-item"><a class="nav-link" href="/users/profile/{{current_user.id}}">My Profile</a></li>

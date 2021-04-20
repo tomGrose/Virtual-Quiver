@@ -35,7 +35,7 @@
           <h4>Looks like you haven't added any discs yet!</h4>
           <p>
             To get started, head over to 
-            <span><a href="/discs/discover/page/1">discover</a></span> 
+            <span><a href="{{url_for('show_discs')}}">discover</a></span> 
             to search for discs you already own to add to your collection. 
             You can also use the searchbar up top to search for discs by name.
           </p>
@@ -67,7 +67,7 @@
             </div>
             <div class="row">
               <div class="col-12">
-                <a href="/discs/recommendations/disc/{{d.id}}/page/1"><button type="submit" class="btn btn-primary w-100">Similiar discs</button></a>
+                <a href="{{url_for('show_similiar_discs', disc_id=d.id)}}"><button type="submit" class="btn btn-primary w-100">Similiar discs</button></a>
               </div>
             </div>
             <div class="row">
@@ -96,7 +96,7 @@
           <h4>Looks like you haven't added any discs to your wishlist!</h4>
           <p>
             To get started, head over to 
-            <span><a href="/discs/discover/page/1">discover</a></span> 
+            <span><a href="{{url_for('show_discs')}}">discover</a></span> 
             to search for discs you eventually want to add to your quiver. 
             You can also use the searchbar up top to search for discs by name.
           </p>
